@@ -1,0 +1,623 @@
+{
+  "project": {
+    "name": "Salary Leftovers Collector",
+    "platform": [
+      "iOS",
+      "Android"
+    ],
+    "language": "Dart",
+    "minimumOSVersion": "N/A",
+    "architecture": "MVVM",
+    "dependencies": [
+      "provider",
+      "camera",
+      "shared_preferences",
+      "charts_flutter",
+      "in_app_review"
+    ],
+    "version": "1.0"
+  }, 
+  "designSystem": {
+    "theme": "Light",
+    "colors": {
+      "primaryBackground": "#F7FAFF",
+      "secondaryBackground": "#FFFFFF",
+      "primaryAccent": "#2A7BDE",
+      "secondaryAccent": "#8C3ED6",
+      "textPrimary": "#232A34",
+      "textSecondary": "#6B7280",
+      "border": "#E3E8F0",
+      "success": "#3AD29F",
+      "warning": "#F8B400",
+      "error": "#E94F37",
+      "cardBackground": "#F1F5FB"
+    },
+    "typography": {
+      "fontFamily": "Inter",
+      "headline1": 24,
+      "headline2": 20,
+      "body": 16,
+      "caption": 13
+    },
+    "spacing": {
+      "xs": 4,
+      "sm": 8,
+      "md": 16,
+      "lg": 24,
+      "xl": 32
+    },
+    "radius": {
+      "sm": 8,
+      "md": 16,
+      "lg": 24
+    },
+    "elevation": {
+      "card": 2,
+      "modal": 8
+    }
+  },
+  "app": {
+    "entryPoint": "main.dart",
+    "lifecycle": "AppLifecycleObserver",
+    "preloader": {
+      "animationType": "CircularLoader",
+      "initializationLogic": "Checks dependencies, loads theme, initializes local storage, fetches user profile.",
+      "dependencyChecks": [
+        "camera permissions",
+        "storage permissions",
+        "local DB availability"
+      ],
+      "themeLoading": "Loads light theme and accent colors.",
+      "transitionLogic": "Navigates to Onboarding if no profile, else Home."
+    },
+    "navigation": {
+      "type": "BottomTabNavigation",
+      "structure": [
+        "HomeScreen",
+        "ExpensesScreen",
+        "WheelScreen",
+        "AnalyticsScreen",
+        "SettingsScreen"
+      ]
+    },
+    "features": [
+      {
+        "screenName": "PreloaderScreen",
+        "view": "PreloaderView",
+        "viewModel": "PreloaderViewModel",
+        "screenType": "system",
+        "primaryPurpose": "App initialization and dependency check",
+        "userActions": [],
+        "inputFields": [],
+        "validationReference": "globalRules",
+        "dataReadFrom": "localStorage",
+        "dataWriteTo": "memory",
+        "cachingPolicy": "none",
+        "offlineBehavior": "full",
+        "connectedServices": [],
+        "navigationLinks": [
+          "OnboardingScreen",
+          "HomeScreen"
+        ],
+        "loadingState": "Animated circular loader",
+        "emptyState": "N/A",
+        "errorState": "Dependency error message",
+        "retryBehavior": "Retry initialization"
+      },
+      {
+        "screenName": "OnboardingScreen1",
+        "view": "OnboardingView1",
+        "viewModel": "OnboardingViewModel1",
+        "screenType": "onboarding",
+        "primaryPurpose": "Introduce leftovers concept",
+        "userActions": [
+          "Next"
+        ],
+        "inputFields": [],
+        "validationReference": "globalRules",
+        "dataReadFrom": "memory",
+        "dataWriteTo": "memory",
+        "cachingPolicy": "none",
+        "offlineBehavior": "full",
+        "connectedServices": [],
+        "navigationLinks": [
+          "OnboardingScreen2"
+        ],
+        "loadingState": "Fade-in",
+        "emptyState": "N/A",
+        "errorState": "N/A",
+        "retryBehavior": "N/A"
+      },
+      {
+        "screenName": "OnboardingScreen2",
+        "view": "OnboardingView2",
+        "viewModel": "OnboardingViewModel2",
+        "screenType": "onboarding",
+        "primaryPurpose": "Explain photo capture and visual tracking",
+        "userActions": [
+          "Finish"
+        ],
+        "inputFields": [],
+        "validationReference": "globalRules",
+        "dataReadFrom": "memory",
+        "dataWriteTo": "memory",
+        "cachingPolicy": "none",
+        "offlineBehavior": "full",
+        "connectedServices": [],
+        "navigationLinks": [
+          "HomeScreen"
+        ],
+        "loadingState": "Fade-in",
+        "emptyState": "N/A",
+        "errorState": "N/A",
+        "retryBehavior": "N/A"
+      },
+      {
+        "screenName": "ProfileScreen",
+        "view": "ProfileView",
+        "viewModel": "ProfileViewModel",
+        "screenType": "profile",
+        "primaryPurpose": "User profile creation and photo capture",
+        "userActions": [
+          "Save",
+          "Skip"
+        ],
+        "inputFields": [
+          {
+            "fieldName": "userName",
+            "fieldType": "text",
+            "required": false,
+            "validationGroup": "textFieldRules",
+            "defaultValue": "",
+            "storageLocation": "localStorage"
+          },
+          {
+            "fieldName": "profilePhoto",
+            "fieldType": "image",
+            "required": false,
+            "validationGroup": "imageRules",
+            "defaultValue": "",
+            "storageLocation": "localStorage"
+          }
+        ],
+        "validationReference": "textFieldRules",
+        "dataReadFrom": "localStorage",
+        "dataWriteTo": "localStorage",
+        "cachingPolicy": "persistent",
+        "offlineBehavior": "full",
+        "connectedServices": [
+          "camera"
+        ],
+        "navigationLinks": [
+          "HomeScreen",
+          "SettingsScreen"
+        ],
+        "loadingState": "Shimmer",
+        "emptyState": "No profile data",
+        "errorState": "Photo permission denied",
+        "retryBehavior": "Prompt for permission again"
+      },
+      {
+        "screenName": "HomeScreen",
+        "view": "HomeView",
+        "viewModel": "HomeViewModel",
+        "screenType": "home",
+        "primaryPurpose": "Overview of salary, daily limit, leftover box, quick photo expense entry",
+        "userActions": [
+          "Add Expense",
+          "Open Wheel",
+          "Take Photo"
+        ],
+        "inputFields": [],
+        "validationReference": "globalRules",
+        "dataReadFrom": "localStorage",
+        "dataWriteTo": "localStorage",
+        "cachingPolicy": "persistent",
+        "offlineBehavior": "full",
+        "connectedServices": [],
+        "navigationLinks": [
+          "ExpensesScreen",
+          "WheelScreen",
+          "AnalyticsScreen",
+          "ProfileScreen"
+        ],
+        "loadingState": "Shimmer",
+        "emptyState": "No expenses yet",
+        "errorState": "Failed to load data",
+        "retryBehavior": "Reload"
+      },
+      {
+        "screenName": "ExpensesScreen",
+        "view": "ExpensesListView",
+        "viewModel": "ExpensesListViewModel",
+        "screenType": "list",
+        "primaryPurpose": "Show all expenses with photos",
+        "userActions": [
+          "View Detail",
+          "Filter"
+        ],
+        "inputFields": [],
+        "validationReference": "globalRules",
+        "dataReadFrom": "localStorage",
+        "dataWriteTo": "none",
+        "cachingPolicy": "persistent",
+        "offlineBehavior": "full",
+        "connectedServices": [],
+        "navigationLinks": [
+          "ExpenseDetailScreen",
+          "CreateExpenseScreen"
+        ],
+        "loadingState": "Shimmer",
+        "emptyState": "No expenses found",
+        "errorState": "Failed to load expenses",
+        "retryBehavior": "Reload"
+      },
+      {
+        "screenName": "ExpenseDetailScreen",
+        "view": "ExpenseDetailView",
+        "viewModel": "ExpenseDetailViewModel",
+        "screenType": "detail",
+        "primaryPurpose": "Show expense details and full photo",
+        "userActions": [
+          "Edit",
+          "Delete",
+          "Retake Photo"
+        ],
+        "inputFields": [],
+        "validationReference": "globalRules",
+        "dataReadFrom": "localStorage",
+        "dataWriteTo": "localStorage",
+        "cachingPolicy": "persistent",
+        "offlineBehavior": "full",
+        "connectedServices": [
+          "camera"
+        ],
+        "navigationLinks": [
+          "EditExpenseScreen",
+          "ExpensesScreen"
+        ],
+        "loadingState": "Shimmer",
+        "emptyState": "No detail data",
+        "errorState": "Failed to load detail",
+        "retryBehavior": "Reload"
+      },
+      {
+        "screenName": "CreateExpenseScreen",
+        "view": "CreateExpenseView",
+        "viewModel": "CreateExpenseViewModel",
+        "screenType": "create",
+        "primaryPurpose": "Create new expense with photo and details",
+        "userActions": [
+          "Capture Photo",
+          "Save"
+        ],
+        "inputFields": [
+          {
+            "fieldName": "amount",
+            "fieldType": "number",
+            "required": true,
+            "validationGroup": "numericFieldRules",
+            "defaultValue": "",
+            "storageLocation": "localStorage"
+          },
+          {
+            "fieldName": "category",
+            "fieldType": "selection",
+            "required": true,
+            "validationGroup": "selectionRules",
+            "defaultValue": "",
+            "storageLocation": "localStorage"
+          },
+          {
+            "fieldName": "comment",
+            "fieldType": "text",
+            "required": false,
+            "validationGroup": "textFieldRules",
+            "defaultValue": "",
+            "storageLocation": "localStorage"
+          },
+          {
+            "fieldName": "expensePhoto",
+            "fieldType": "image",
+            "required": true,
+            "validationGroup": "imageRules",
+            "defaultValue": "",
+            "storageLocation": "localStorage"
+          }
+        ],
+        "validationReference": "numericFieldRules",
+        "dataReadFrom": "localStorage",
+        "dataWriteTo": "localStorage",
+        "cachingPolicy": "persistent",
+        "offlineBehavior": "full",
+        "connectedServices": [
+          "camera"
+        ],
+        "navigationLinks": [
+          "ExpensesScreen"
+        ],
+        "loadingState": "Shimmer",
+        "emptyState": "N/A",
+        "errorState": "Validation error",
+        "retryBehavior": "Prompt correction"
+      },
+      {
+        "screenName": "EditExpenseScreen",
+        "view": "EditExpenseView",
+        "viewModel": "EditExpenseViewModel",
+        "screenType": "edit",
+        "primaryPurpose": "Edit existing expense and update photo",
+        "userActions": [
+          "Update",
+          "Retake Photo"
+        ],
+        "inputFields": [
+          {
+            "fieldName": "amount",
+            "fieldType": "number",
+            "required": true,
+            "validationGroup": "numericFieldRules",
+            "defaultValue": "",
+            "storageLocation": "localStorage"
+          },
+          {
+            "fieldName": "category",
+            "fieldType": "selection",
+            "required": true,
+            "validationGroup": "selectionRules",
+            "defaultValue": "",
+            "storageLocation": "localStorage"
+          },
+          {
+            "fieldName": "comment",
+            "fieldType": "text",
+            "required": false,
+            "validationGroup": "textFieldRules",
+            "defaultValue": "",
+            "storageLocation": "localStorage"
+          },
+          {
+            "fieldName": "expensePhoto",
+            "fieldType": "image",
+            "required": true,
+            "validationGroup": "imageRules",
+            "defaultValue": "",
+            "storageLocation": "localStorage"
+          }
+        ],
+        "validationReference": "numericFieldRules",
+        "dataReadFrom": "localStorage",
+        "dataWriteTo": "localStorage",
+        "cachingPolicy": "persistent",
+        "offlineBehavior": "full",
+        "connectedServices": [
+          "camera"
+        ],
+        "navigationLinks": [
+          "ExpenseDetailScreen"
+        ],
+        "loadingState": "Shimmer",
+        "emptyState": "N/A",
+        "errorState": "Validation error",
+        "retryBehavior": "Prompt correction"
+      },
+      {
+        "screenName": "WheelScreen",
+        "view": "WheelView",
+        "viewModel": "WheelViewModel",
+        "screenType": "feature",
+        "primaryPurpose": "Randomly multiply leftovers once per day",
+        "userActions": [
+          "Spin Wheel"
+        ],
+        "inputFields": [],
+        "validationReference": "globalRules",
+        "dataReadFrom": "localStorage",
+        "dataWriteTo": "localStorage",
+        "cachingPolicy": "persistent",
+        "offlineBehavior": "full",
+        "connectedServices": [],
+        "navigationLinks": [
+          "HomeScreen",
+          "AnalyticsScreen"
+        ],
+        "loadingState": "Animated wheel",
+        "emptyState": "No leftovers yet",
+        "errorState": "Spin failed",
+        "retryBehavior": "Retry spin"
+      },
+      {
+        "screenName": "AnalyticsScreen",
+        "view": "AnalyticsView",
+        "viewModel": "AnalyticsViewModel",
+        "screenType": "analytics",
+        "primaryPurpose": "Show savings and expense analytics",
+        "userActions": [
+          "Change Period",
+          "Export Data"
+        ],
+        "inputFields": [],
+        "validationReference": "globalRules",
+        "dataReadFrom": "localStorage",
+        "dataWriteTo": "none",
+        "cachingPolicy": "persistent",
+        "offlineBehavior": "full",
+        "connectedServices": [],
+        "navigationLinks": [
+          "HomeScreen"
+        ],
+        "loadingState": "Shimmer",
+        "emptyState": "No analytics data",
+        "errorState": "Failed to load analytics",
+        "retryBehavior": "Reload"
+      },
+      {
+        "screenName": "SettingsScreen",
+        "view": "SettingsView",
+        "viewModel": "SettingsViewModel",
+        "screenType": "settings",
+        "primaryPurpose": "Manage app, privacy, notifications, advanced features",
+        "userActions": [
+          "Change Currency",
+          "Enable Notifications",
+          "Toggle Analytics",
+          "Manage Photos",
+          "Purge Database",
+          "Switch Theme",
+          "Rate App",
+          "Share App",
+          "View Privacy Policy",
+          "View App Version"
+        ],
+        "inputFields": [
+          {
+            "fieldName": "currency",
+            "fieldType": "picker",
+            "required": true,
+            "validationGroup": "selectionRules",
+            "defaultValue": "USD",
+            "storageLocation": "localStorage"
+          },
+          {
+            "fieldName": "notificationsEnabled",
+            "fieldType": "toggle",
+            "required": false,
+            "validationGroup": "globalRules",
+            "defaultValue": true,
+            "storageLocation": "localStorage"
+          },
+          {
+            "fieldName": "advancedAnalytics",
+            "fieldType": "toggle",
+            "required": false,
+            "validationGroup": "globalRules",
+            "defaultValue": false,
+            "storageLocation": "localStorage"
+          },
+          {
+            "fieldName": "photoCaptureMode",
+            "fieldType": "toggle",
+            "required": false,
+            "validationGroup": "globalRules",
+            "defaultValue": true,
+            "storageLocation": "localStorage"
+          }
+        ],
+        "validationReference": "globalRules",
+        "dataReadFrom": "localStorage",
+        "dataWriteTo": "localStorage",
+        "cachingPolicy": "persistent",
+        "offlineBehavior": "full",
+        "connectedServices": [],
+        "navigationLinks": [
+          "ProfileScreen"
+        ],
+        "loadingState": "Shimmer",
+        "emptyState": "No settings found",
+        "errorState": "Failed to load settings",
+        "retryBehavior": "Reload"
+      }
+    ],
+    "services": [
+      {
+        "serviceName": "CameraService",
+        "serviceType": "device",
+        "primaryPurpose": "Capture photos for expenses and profile",
+        "dataReadFrom": "camera",
+        "dataWriteTo": "localStorage",
+        "cachingPolicy": "persistent",
+        "offlineBehavior": "full"
+      },
+      {
+        "serviceName": "LocalStorageService",
+        "serviceType": "storage",
+        "primaryPurpose": "Store all user data and images",
+        "dataReadFrom": "memory",
+        "dataWriteTo": "device",
+        "cachingPolicy": "persistent",
+        "offlineBehavior": "full"
+      },
+      {
+        "serviceName": "AnalyticsService",
+        "serviceType": "logic",
+        "primaryPurpose": "Calculate savings, leftovers, and trends",
+        "dataReadFrom": "localStorage",
+        "dataWriteTo": "none",
+        "cachingPolicy": "none",
+        "offlineBehavior": "full"
+      }
+    ],
+    "validation": {
+      "globalRules": {
+        "constraints": "No empty required fields, no null values",
+        "errorMessage": "Field is required",
+        "systemBehavior": "Block submission, highlight field"
+      },
+      "textFieldRules": {
+        "constraints": "Min 2, max 40 chars, no special symbols except dash/space",
+        "errorMessage": "Invalid text input",
+        "systemBehavior": "Show inline error, block submission"
+      },
+      "numericFieldRules": {
+        "constraints": "Positive numbers only, max 6 digits",
+        "errorMessage": "Invalid amount",
+        "systemBehavior": "Show inline error, block submission"
+      },
+      "dateFieldRules": {
+        "constraints": "Valid date, not in future",
+        "errorMessage": "Invalid date",
+        "systemBehavior": "Show inline error, block submission"
+      },
+      "imageRules": {
+        "constraints": "JPEG/PNG, max 5MB, must be photo (not blank)",
+        "errorMessage": "Invalid or missing photo",
+        "systemBehavior": "Show inline error, block submission"
+      },
+      "selectionRules": {
+        "constraints": "Must select from list",
+        "errorMessage": "Selection required",
+        "systemBehavior": "Show inline error, block submission"
+      },
+      "errorHandlingStrategy": "Show error dialog, allow retry, log error",
+      "formSubmissionPolicy": "Block submission on any validation error, focus first invalid field"
+    },
+    "components": [
+      "ExpenseCard",
+      "PhotoPicker",
+      "WheelWidget",
+      "AnalyticsChart",
+      "ProfileAvatar",
+      "SettingsList",
+      "CurrencyPicker",
+      "NotificationBanner"
+    ],
+    "ratingFlow": {
+      "type": "native",
+      "implementation": "in_app_review",
+      "threshold": 4,
+      "feedbackForm": false,
+      "validationRules": [],
+      "redirectCondition": "Prompt native review after 10 uses"
+    },
+    "notificationFlows": [
+      {
+        "notificationType": "reminder",
+        "title": "Don’t forget to log today’s expenses!",
+        "body": "Track your daily spending and grow your leftovers.",
+        "triggerCondition": "Daily at 8pm if no expense added",
+        "frequency": "daily",
+        "deepLinkDestination": "CreateExpenseScreen",
+        "relatedFeature": "Expense Tracking"
+      },
+      {
+        "notificationType": "wheelReady",
+        "title": "Wheel mode is ready!",
+        "body": "Spin the wheel to multiply your leftovers today.",
+        "triggerCondition": "Once per day at 7pm",
+        "frequency": "daily",
+        "deepLinkDestination": "WheelScreen",
+        "relatedFeature": "Wheel Mode"
+      }
+    ]
+  }
+}
