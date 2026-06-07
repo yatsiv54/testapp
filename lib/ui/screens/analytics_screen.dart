@@ -162,7 +162,16 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       animate: true,
                       defaultRenderer: charts.ArcRendererConfig<String>(
                         arcWidth: 60,
-                        arcRendererDecorators: [charts.ArcLabelDecorator<String>()],
+                        arcRendererDecorators: [
+                          charts.ArcLabelDecorator<String>(
+                            insideLabelStyleSpec: charts.TextStyleSpec(
+                              color: charts.ColorUtil.fromDartColor(Colors.white),
+                            ),
+                            outsideLabelStyleSpec: charts.TextStyleSpec(
+                              color: charts.ColorUtil.fromDartColor(Theme.of(context).colorScheme.onSurface),
+                            ),
+                          )
+                        ],
                       ),
                     ),
                   ),
@@ -180,15 +189,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     const SizedBox(height: 24),
                     Text('Advanced Analytics', style: Theme.of(context).textTheme.displayMedium),
                     const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text('Efficiency Summary', style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 8),
@@ -212,16 +217,29 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                 )
                               ],
                               animate: true,
-                              domainAxis: const charts.OrdinalAxisSpec(
-                                renderSpec: charts.SmallTickRendererSpec(labelRotation: 45),
+                              domainAxis: charts.OrdinalAxisSpec(
+                                renderSpec: charts.SmallTickRendererSpec(
+                                  labelRotation: 45,
+                                  labelStyle: charts.TextStyleSpec(
+                                    color: charts.ColorUtil.fromDartColor(Theme.of(context).colorScheme.onSurfaceVariant),
+                                  ),
+                                ),
+                              ),
+                              primaryMeasureAxis: charts.NumericAxisSpec(
+                                renderSpec: charts.GridlineRendererSpec(
+                                  labelStyle: charts.TextStyleSpec(
+                                    color: charts.ColorUtil.fromDartColor(Theme.of(context).colorScheme.onSurfaceVariant),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
+                  ),
                   ],
-                  const SizedBox(height: 80),
+                  const SizedBox(height: 120), // Increased padding to avoid navbar overlap
                 ]),
               ),
             ),

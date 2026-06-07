@@ -91,14 +91,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                             );
                           },
                           child: Card(
-                            color: Theme.of(context).cardColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              side: const BorderSide(color: AppColors.border, width: 1),
-                            ),
                             margin: const EdgeInsets.only(bottom: 16),
-                            elevation: 4,
-                            shadowColor: Colors.black26,
                             child: ListTile(
                               onTap: () {
                                 Navigator.of(context).push(
@@ -133,6 +126,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                     ),
                   ),
                 ),
+              const SliverPadding(padding: EdgeInsets.only(bottom: 120)),
             ],
           );
         },

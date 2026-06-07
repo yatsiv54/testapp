@@ -148,6 +148,7 @@ class SettingsScreen extends StatelessWidget {
             title: Text('Version'),
             trailing: Text('1.0.0+1'),
           ),
+          const SizedBox(height: 120),
             ]),
           ),
         ],

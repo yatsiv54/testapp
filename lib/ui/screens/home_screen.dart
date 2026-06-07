@@ -121,7 +121,27 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Text('Recent Expenses', style: Theme.of(context).textTheme.displayMedium),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Recent Expenses', style: Theme.of(context).textTheme.displayMedium),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const CreateExpenseScreen()),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryAccent.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.add, color: AppColors.primaryAccent),
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 12),
                 ],
               ),
@@ -144,11 +164,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   (context, index) {
                     final expense = expensesVm.expenses[expensesVm.expenses.length - 1 - index];
                     return Card(
-                      color: Theme.of(context).cardColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: const BorderSide(color: AppColors.border, width: 1),
-                      ),
                       margin: const EdgeInsets.only(bottom: 12),
                       child: ListTile(
                         onTap: () {
@@ -181,20 +196,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-          const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
+          const SliverPadding(padding: EdgeInsets.only(bottom: 120)), // Increased bottom padding to avoid navbar overlap
         ],
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 90.0),
-        child: FloatingActionButton(
-          backgroundColor: AppColors.primaryAccent,
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const CreateExpenseScreen()),
-            );
-          },
-          child: const Icon(Icons.add, color: Colors.white),
-        ),
       ),
     );
   }

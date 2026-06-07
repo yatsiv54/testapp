@@ -38,7 +38,10 @@ class _MainScreenState extends State<MainScreen> {
           return FadeTransition(
             opacity: animation,
             child: SlideTransition(
-              position: Tween<Offset>(begin: const Offset(0.0, 0.05), end: Offset.zero).animate(animation),
+              position: Tween<Offset>(
+                begin: const Offset(0.0, 0.05),
+                end: Offset.zero,
+              ).animate(animation),
               child: child,
             ),
           );
@@ -50,14 +53,18 @@ class _MainScreenState extends State<MainScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).bottomNavigationBarTheme.backgroundColor?.withValues(alpha: 0.8) ?? Theme.of(context).cardColor.withValues(alpha: 0.8),
+              color: AppColors.primaryAccent,
               borderRadius: BorderRadius.circular(32),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.3),
+                width: 1,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryAccent.withValues(alpha: 0.15),
-                  blurRadius: 20,
+                  color: AppColors.primaryAccent.withValues(alpha: 0.5),
+                  blurRadius: 10,
                   offset: const Offset(0, 10),
-                )
+                ),
               ],
             ),
             child: ClipRRect(
@@ -87,17 +94,22 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildNavItem(int index, IconData icon, String label) {
     final isSelected = _currentIndex == index;
-    final color = isSelected ? AppColors.primaryAccent : Theme.of(context).colorScheme.onSurfaceVariant;
-    
+    final color = isSelected ? Colors.white : Colors.white60;
+
     return GestureDetector(
       onTap: () => setState(() => _currentIndex = index),
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOutCubic,
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: isSelected ? 16 : 12),
+        padding: EdgeInsets.symmetric(
+          vertical: 12,
+          horizontal: isSelected ? 16 : 12,
+        ),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryAccent.withValues(alpha: 0.1) : Colors.transparent,
+          color: isSelected
+              ? Colors.white.withValues(alpha: 0.2)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Row(
@@ -108,9 +120,13 @@ class _MainScreenState extends State<MainScreen> {
               const SizedBox(width: 6),
               Text(
                 label,
-                style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13),
+                style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
               ),
-            ]
+            ],
           ],
         ),
       ),

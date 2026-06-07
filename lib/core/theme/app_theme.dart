@@ -14,15 +14,21 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
-        titleTextStyle: AppTypography.headline2.copyWith(color: AppColors.textPrimary),
+        titleTextStyle: AppTypography.headline2.copyWith(
+          color: AppColors.textPrimary,
+        ),
       ),
-      textTheme: const TextTheme(
-        displayLarge: AppTypography.headline1,
-        displayMedium: AppTypography.headline2,
-        bodyLarge: AppTypography.body,
-        bodyMedium: AppTypography.body,
-        bodySmall: AppTypography.caption,
-      ).apply(bodyColor: AppColors.textPrimary, displayColor: AppColors.textPrimary),
+      textTheme:
+          const TextTheme(
+            displayLarge: AppTypography.headline1,
+            displayMedium: AppTypography.headline2,
+            bodyLarge: AppTypography.body,
+            bodyMedium: AppTypography.body,
+            bodySmall: AppTypography.caption,
+          ).apply(
+            bodyColor: AppColors.textPrimary,
+            displayColor: AppColors.textPrimary,
+          ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent, // Handled by container gradient
@@ -54,7 +60,10 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.primaryAccent, width: 2),
+          borderSide: const BorderSide(
+            color: AppColors.primaryAccent,
+            width: 2,
+          ),
         ),
         labelStyle: const TextStyle(color: AppColors.textSecondary),
       ),
@@ -64,6 +73,16 @@ class AppTheme {
         unselectedItemColor: AppColors.textSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
+      ),
+      cardTheme: CardThemeData(
+        color: AppColors.secondaryBackground,
+        elevation: 10,
+
+        shadowColor: AppColors.primaryAccent.withValues(alpha: 0.5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: Colors.blueAccent, width: 1),
+        ),
       ),
     );
   }
@@ -119,7 +138,10 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.primaryAccent, width: 2),
+          borderSide: const BorderSide(
+            color: AppColors.primaryAccent,
+            width: 2,
+          ),
         ),
         labelStyle: const TextStyle(color: Colors.white70),
       ),
