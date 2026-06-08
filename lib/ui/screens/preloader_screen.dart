@@ -166,13 +166,13 @@ class _PreloaderScreenState extends State<PreloaderScreen>
         child: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                AppColors.primaryBackground,
-                AppColors.secondaryBackground,
+                Theme.of(context).scaffoldBackgroundColor,
+                Theme.of(context).cardColor,
               ],
             ),
           ),
@@ -237,7 +237,7 @@ class _PreloaderScreenState extends State<PreloaderScreen>
                         Text(
                           'Salary Leftovers',
                           style: AppTypography.headline1.copyWith(
-                            color: AppColors.textPrimary,
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontSize: 26,
                             fontWeight: FontWeight.bold,
                           ),

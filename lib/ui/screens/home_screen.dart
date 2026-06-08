@@ -1,3 +1,5 @@
+import 'package:community_charts_flutter/community_charts_flutter.dart'
+    as charts;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -15,6 +17,7 @@ import 'expense_detail_screen.dart';
 import '../widgets/empty_state_widget.dart';
 import '../widgets/loading_shimmer_widget.dart';
 import '../widgets/error_state_widget.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -122,27 +125,50 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             actions: [
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen(isInitialSetup: false)));
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          const ProfileScreen(isInitialSetup: false),
+                    ),
+                  );
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16.0),
                   child: Hero(
                     tag: 'profile_avatar',
                     child: Container(
+                      padding: const EdgeInsets.all(2),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: AppColors.primaryAccent.withValues(alpha: 0.3),
+                          color: AppColors.primaryAccent.withValues(alpha: 0.5),
                           width: 2,
                         ),
                       ),
                       child: CircleAvatar(
-                        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                        backgroundImage: (homeVm.profile?.photoPath != null && homeVm.profile!.photoPath.isNotEmpty)
+                        key: ValueKey(homeVm.profile?.photoPath),
+                        radius: 20,
+                        backgroundColor: Theme.of(
+                          context,
+                        ).scaffoldBackgroundColor,
+                        backgroundImage:
+                            (homeVm.profile?.photoPath != null &&
+                                homeVm.profile!.photoPath.isNotEmpty &&
+                                File(homeVm.profile!.photoPath).existsSync() &&
+                                File(homeVm.profile!.photoPath).lengthSync() >
+                                    0)
                             ? FileImage(File(homeVm.profile!.photoPath))
                             : null,
-                        child: (homeVm.profile?.photoPath == null || homeVm.profile!.photoPath.isEmpty)
-                            ? const Icon(Icons.person, color: AppColors.primaryAccent)
+                        child:
+                            (homeVm.profile?.photoPath == null ||
+                                homeVm.profile!.photoPath.isEmpty ||
+                                !File(homeVm.profile!.photoPath).existsSync() ||
+                                File(homeVm.profile!.photoPath).lengthSync() ==
+                                    0)
+                            ? const Icon(
+                                Icons.person,
+                                color: AppColors.primaryAccent,
+                              )
                             : null,
                       ),
                     ),
@@ -175,9 +201,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       padding: const EdgeInsets.only(bottom: 16.0),
                       child: Text(
                         '${_getGreeting()}, ${homeVm.profile?.name ?? 'there'}!',
-                        style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                        style: Theme.of(context).textTheme.displayMedium
+                            ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
                     ),
                   ),
@@ -202,12 +227,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primaryAccent.withValues(alpha: 0.3),
+                            color: AppColors.primaryAccent.withValues(
+                              alpha: 0.3,
+                            ),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
                           BoxShadow(
-                            color: AppColors.secondaryAccent.withValues(alpha: 0.15),
+                            color: AppColors.secondaryAccent.withValues(
+                              alpha: 0.15,
+                            ),
                             blurRadius: 40,
                             offset: const Offset(0, 20),
                           ),
@@ -238,36 +267,72 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Consumer3<HomeViewModel, ExpensesListViewModel, SettingsViewModel>(
-                                builder: (context, homeVm, expensesVm, settingsVm, child) {
-                                  final symbol = CurrencyHelper.getSymbol(settingsVm.currency);
+                              Consumer3<
+                                HomeViewModel,
+                                ExpensesListViewModel,
+                                SettingsViewModel
+                              >(
+                                builder:
+                                    (
+                                      context,
+                                      homeVm,
+                                      expensesVm,
+                                      settingsVm,
+                                      child,
+                                    ) {
+                                      final symbol = CurrencyHelper.getSymbol(
+                                        settingsVm.currency,
+                                      );
 
-                                  final today = DateTime.now();
-                                  final todayExpenses = expensesVm.expenses.where((e) =>
-                                      e.date.year == today.year &&
-                                      e.date.month == today.month &&
-                                      e.date.day == today.day
-                                  ).fold(0.0, (sum, e) => sum + e.amount);
+                                      final today = DateTime.now();
+                                      final todayExpenses = expensesVm.expenses
+                                          .where(
+                                            (e) =>
+                                                e.date.year == today.year &&
+                                                e.date.month == today.month &&
+                                                e.date.day == today.day,
+                                          )
+                                          .fold(
+                                            0.0,
+                                            (sum, e) => sum + e.amount,
+                                          );
 
-                                  final currentBalance = homeVm.leftovers + (homeVm.profile?.dailyLimit ?? 0) - todayExpenses;
+                                      final currentBalance =
+                                          homeVm.leftovers +
+                                          (homeVm.profile?.dailyLimit ?? 0) -
+                                          todayExpenses;
 
-                                  return TweenAnimationBuilder<double>(
-                                    tween: Tween(begin: 0.0, end: currentBalance),
-                                    duration: const Duration(milliseconds: 1200),
-                                    curve: Curves.easeOutCubic,
-                                    builder: (context, animatedValue, child) {
-                                      return Text(
-                                        '$symbol${animatedValue.toStringAsFixed(2)}',
-                                        style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 36,
-                                          shadows: [const Shadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4))],
+                                      return TweenAnimationBuilder<double>(
+                                        tween: Tween(
+                                          begin: 0.0,
+                                          end: currentBalance,
                                         ),
+                                        duration: const Duration(
+                                          milliseconds: 1200,
+                                        ),
+                                        curve: Curves.easeOutCubic,
+                                        builder: (context, animatedValue, child) {
+                                          return Text(
+                                            '$symbol${animatedValue.toStringAsFixed(2)}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .displayLarge
+                                                ?.copyWith(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 36,
+                                                  shadows: [
+                                                    const Shadow(
+                                                      color: Colors.black26,
+                                                      blurRadius: 10,
+                                                      offset: Offset(0, 4),
+                                                    ),
+                                                  ],
+                                                ),
+                                          );
+                                        },
                                       );
                                     },
-                                  );
-                                },
                               ),
                               const SizedBox(height: 4),
                               Consumer<HomeViewModel>(
@@ -287,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 40),
                   // Quick action buttons
                   TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0.0, end: 1.0),
@@ -311,7 +376,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           color: AppColors.primaryAccent,
                           onTap: () {
                             Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const CreateExpenseScreen()),
+                              MaterialPageRoute(
+                                builder: (_) => const CreateExpenseScreen(),
+                              ),
                             );
                           },
                         ),
@@ -321,7 +388,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           color: AppColors.secondaryAccent,
                           onTap: () {
                             // Navigate to wheel tab (index 2) via MainScreen
-                            final mainState = context.findAncestorStateOfType<State>();
+                            final mainState = context
+                                .findAncestorStateOfType<State>();
                             if (mainState != null) {
                               // Find the main screen's state and switch tab
                               _switchToTab(context, 2);
@@ -346,19 +414,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     duration: const Duration(milliseconds: 1000),
                     curve: Curves.easeOutCubic,
                     builder: (context, value, child) {
-                      return Opacity(
-                        opacity: value,
-                        child: child,
-                      );
+                      return Opacity(opacity: value, child: child);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Recent Expenses', style: Theme.of(context).textTheme.displayMedium),
+                        Text(
+                          'Recent Expenses',
+                          style: Theme.of(context).textTheme.displayMedium,
+                        ),
                         GestureDetector(
                           onTap: () {
                             Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const CreateExpenseScreen()),
+                              MaterialPageRoute(
+                                builder: (_) => const CreateExpenseScreen(),
+                              ),
                             );
                           },
                           child: Container(
@@ -366,13 +436,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  AppColors.primaryAccent.withValues(alpha: 0.15),
-                                  AppColors.secondaryAccent.withValues(alpha: 0.1),
+                                  AppColors.primaryAccent.withValues(
+                                    alpha: 0.15,
+                                  ),
+                                  AppColors.secondaryAccent.withValues(
+                                    alpha: 0.1,
+                                  ),
                                 ],
                               ),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.add, color: AppColors.primaryAccent),
+                            child: const Icon(
+                              Icons.add,
+                              color: AppColors.primaryAccent,
+                            ),
                           ),
                         ),
                       ],
@@ -398,7 +475,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    final expense = expensesVm.expenses[expensesVm.expenses.length - 1 - index];
+                    final expense = expensesVm
+                        .expenses[expensesVm.expenses.length - 1 - index];
                     final categoryColor = _getCategoryColor(expense.category);
                     final categoryIcon = _getCategoryIcon(expense.category);
 
@@ -416,9 +494,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         );
                       },
                       child: Container(
-                        margin: const EdgeInsets.only(bottom: 12),
+                        margin: const EdgeInsets.only(bottom: 10),
                         decoration: BoxDecoration(
-                          color: AppColors.secondaryBackground,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: AppColors.border.withValues(alpha: 0.5),
@@ -437,7 +515,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             borderRadius: BorderRadius.circular(16),
                             onTap: () {
                               Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => ExpenseDetailScreen(expense: expense)),
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      ExpenseDetailScreen(expense: expense),
+                                ),
                               );
                             },
                             child: Padding(
@@ -449,17 +530,36 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     width: 50,
                                     height: 50,
                                     decoration: BoxDecoration(
-                                      color: categoryColor.withValues(alpha: 0.12),
+                                      color: categoryColor.withValues(
+                                        alpha: 0.12,
+                                      ),
                                       borderRadius: BorderRadius.circular(14),
                                     ),
                                     child: expense.photoPath.isNotEmpty
                                         ? ClipRRect(
-                                            borderRadius: BorderRadius.circular(14),
+                                            borderRadius: BorderRadius.circular(
+                                              14,
+                                            ),
                                             child: Image.file(
                                               File(expense.photoPath),
                                               fit: BoxFit.cover,
                                               width: 50,
                                               height: 50,
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                    return Container(
+                                                      width: 50,
+                                                      height: 50,
+                                                      color: AppColors.error
+                                                          .withValues(
+                                                            alpha: 0.1,
+                                                          ),
+                                                      child: const Icon(
+                                                        Icons.receipt_long,
+                                                        color: AppColors.error,
+                                                      ),
+                                                    );
+                                                  },
                                             ),
                                           )
                                         : Icon(
@@ -472,13 +572,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   // Category + date
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           expense.category,
-                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                                color: Theme.of(context).colorScheme.onSurface,
+                                              ),
                                         ),
                                         const SizedBox(height: 4),
                                         Row(
@@ -493,7 +598,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             ),
                                             const SizedBox(width: 6),
                                             Text(
-                                              DateFormat('MMM dd, hh:mm a').format(expense.date),
+                                              DateFormat(
+                                                'MMM dd, hh:mm a',
+                                              ).format(expense.date),
                                               style: TextStyle(
                                                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                                                 fontSize: 13,
@@ -507,10 +614,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   // Amount
                                   Text(
                                     '-${CurrencyHelper.getSymbol(expense.currency)}${expense.amount.toStringAsFixed(2)}',
-                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      color: AppColors.error,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: Theme.of(context).textTheme.bodyLarge
+                                        ?.copyWith(
+                                          color: AppColors.error,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -520,7 +628,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                     );
                   },
-                  childCount: expensesVm.expenses.length > 5 ? 5 : expensesVm.expenses.length,
+                  childCount: expensesVm.expenses.length > 5
+                      ? 5
+                      : expensesVm.expenses.length,
                 ),
               ),
             ),
@@ -535,10 +645,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     context.visitAncestorElements((element) {
       if (element.widget.runtimeType.toString() == 'MainScreen') {
         final state = (element as StatefulElement).state;
-        // Use dynamic dispatch to call setState
-        (state as dynamic).setState(() {
-          (state as dynamic)._currentIndex = index;
-        });
+        if (state.runtimeType.toString() == 'MainScreenState') {
+          (state as dynamic).switchToTab(index);
+        }
         return false;
       }
       return true;
@@ -610,17 +719,13 @@ class _QuickActionButtonState extends State<_QuickActionButton>
                   width: 1.5,
                 ),
               ),
-              child: Icon(
-                widget.icon,
-                color: widget.color,
-                size: 26,
-              ),
+              child: Icon(widget.icon, color: widget.color, size: 26),
             ),
             const SizedBox(height: 8),
             Text(
               widget.label,
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),

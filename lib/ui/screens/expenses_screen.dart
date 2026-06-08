@@ -79,7 +79,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 ),
               ),
               if (vm.isLoading)
-                const SliverFillRemaining(child: LoadingShimmerWidget(type: ShimmerType.list))
+                const SliverFillRemaining(
+                  child: LoadingShimmerWidget(type: ShimmerType.list),
+                )
               else if (vm.hasError)
                 SliverFillRemaining(
                   child: ErrorStateWidget(
@@ -118,8 +120,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       grouped.putIfAbsent(key, () => []).add(i);
     }
 
-    final sortedKeys = grouped.keys.toList()
-      ..sort((a, b) => b.compareTo(a));
+    final sortedKeys = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
 
     final slivers = <Widget>[];
     var animIndex = 0;
@@ -130,7 +131,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
       slivers.add(
         SliverPadding(
-          padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 4),
+          padding: const EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: 4,
+          ),
           sliver: SliverToBoxAdapter(
             child: TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.0, end: 1.0),
@@ -185,43 +191,36 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           sliver: SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, listIndex) {
-                final expenseIndex = indices[listIndex];
-                final expense = expenses[expenseIndex];
-                final currentAnimIndex = animIndex + listIndex;
+            delegate: SliverChildBuilderDelegate((context, listIndex) {
+              final expenseIndex = indices[listIndex];
+              final expense = expenses[expenseIndex];
+              final currentAnimIndex = animIndex + listIndex;
 
-                return TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  duration: Duration(
-                    milliseconds: 300 + (currentAnimIndex * 50).clamp(0, 500),
-                  ),
-                  curve: Curves.easeOutCubic,
-                  builder: (context, value, child) {
-                    return Transform.translate(
-                      offset: Offset(0, 20 * (1 - value)),
-                      child: Opacity(
-                        opacity: value,
-                        child: child,
+              return TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: Duration(
+                  milliseconds: 300 + (currentAnimIndex * 50).clamp(0, 500),
+                ),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, child) {
+                  return Transform.translate(
+                    offset: Offset(0, 20 * (1 - value)),
+                    child: Opacity(opacity: value, child: child),
+                  );
+                },
+                child: _ExpenseCard(
+                  expense: expense,
+                  categoryIcon: _categoryIcon(expense.category),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => ExpenseDetailScreen(expense: expense),
                       ),
                     );
                   },
-                  child: _ExpenseCard(
-                    expense: expense,
-                    categoryIcon: _categoryIcon(expense.category),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              ExpenseDetailScreen(expense: expense),
-                        ),
-                      );
-                    },
-                  ),
-                );
-              },
-              childCount: indices.length,
-            ),
+                ),
+              );
+            }, childCount: indices.length),
           ),
         ),
       );
@@ -280,7 +279,7 @@ class _ExpenseCardState extends State<_ExpenseCard> {
           curve: Curves.easeInOut,
           child: Container(
             decoration: BoxDecoration(
-              color: AppColors.secondaryBackground,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: _isPressed
@@ -346,7 +345,9 @@ class _ExpenseCardState extends State<_ExpenseCard> {
                                       widget.expense.category,
                                       style: AppTypography.body.copyWith(
                                         fontWeight: FontWeight.w600,
-                                        color: AppColors.textPrimary,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                       ),
                                     ),
                                   ),
@@ -354,11 +355,13 @@ class _ExpenseCardState extends State<_ExpenseCard> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                DateFormat('MMM dd, yyyy').format(
-                                  widget.expense.date,
-                                ),
+                                DateFormat(
+                                  'MMM dd, yyyy',
+                                ).format(widget.expense.date),
                                 style: AppTypography.caption.copyWith(
-                                  color: AppColors.textSecondary,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                               if (widget.expense.comment.isNotEmpty) ...[
@@ -368,7 +371,9 @@ class _ExpenseCardState extends State<_ExpenseCard> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: AppTypography.caption.copyWith(
-                                    color: AppColors.textSecondary
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant
                                         .withValues(alpha: 0.7),
                                     fontStyle: FontStyle.italic,
                                   ),
@@ -435,6 +440,12 @@ class _ExpenseCardState extends State<_ExpenseCard> {
                 fit: BoxFit.cover,
                 width: 56,
                 height: 56,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: 56,
+                  height: 56,
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  child: const Icon(Icons.receipt_long, color: AppColors.error),
+                ),
               )
             : Center(
                 child: Icon(

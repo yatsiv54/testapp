@@ -107,11 +107,13 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                   child: GestureDetector(
                     onTap: () async {
                       try {
-                        final picked = await ImagePicker().pickImage(source: ImageSource.camera);
+                        final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
                         if (picked != null) {
-                          final path = await ImageHelper.saveImageLocally(picked.path);
+                          final path = await ImageHelper.saveImageLocally(picked);
                           if (path != null) {
-                            setState(() => _photoPath = path);
+                            setState(() {
+                              _photoPath = path;
+                            });
                           }
                         }
                       } catch (e) {
@@ -129,7 +131,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                           color: _photoPath.isEmpty ? AppColors.border : AppColors.primaryAccent,
                           width: _photoPath.isEmpty ? 2 : 3,
                         ),
-                        image: _photoPath.isNotEmpty
+                        image: (_photoPath.isNotEmpty && File(_photoPath).existsSync() && File(_photoPath).lengthSync() > 0)
                             ? DecorationImage(
                                 image: FileImage(File(_photoPath)),
                                 fit: BoxFit.cover,
@@ -148,7 +150,7 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                             )
                         ],
                       ),
-                      child: _photoPath.isEmpty
+                      child: (_photoPath.isEmpty || !File(_photoPath).existsSync() || File(_photoPath).lengthSync() == 0)
                           ? Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -170,7 +172,20 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                             )
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(16),
-                              child: Image.file(File(_photoPath), fit: BoxFit.cover, width: double.infinity),
+                              child: Image.file(
+                                File(_photoPath),
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: double.infinity,
+                                    color: AppColors.error.withValues(alpha: 0.1),
+                                    child: const Center(
+                                      child: Icon(Icons.broken_image, color: AppColors.error, size: 48),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                     ),
                   ),

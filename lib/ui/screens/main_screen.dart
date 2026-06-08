@@ -12,11 +12,17 @@ class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  State<MainScreen> createState() => MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
+
+  void switchToTab(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   final List<Widget> _screens = [
     const HomeScreen(),
@@ -53,14 +59,17 @@ class _MainScreenState extends State<MainScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Container(
             decoration: BoxDecoration(
-              color: AppColors.primaryAccent.withValues(alpha: 0.7), // Translucent matte blue
+              gradient: LinearGradient(
+                colors: AppColors.primaryGradient.colors,
+              ),
               borderRadius: BorderRadius.circular(32),
               border: Border.all(
-                color: Colors.grey.withValues(alpha: 0.5), // Grey border
+                color: Colors.grey.withValues(alpha: 0.5),
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
+                
                   color: AppColors.primaryAccent.withValues(alpha: 0.5),
                   blurRadius: 10,
                   offset: const Offset(0, 10),
@@ -70,7 +79,7 @@ class _MainScreenState extends State<MainScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(32),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Row(

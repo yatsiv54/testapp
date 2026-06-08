@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:community_charts_flutter/community_charts_flutter.dart' as charts;
+import 'package:community_charts_flutter/community_charts_flutter.dart'
+    as charts;
 import 'package:share_plus/share_plus.dart';
 import 'dart:io';
 import 'dart:ui';
@@ -26,16 +27,23 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   String _selectedPeriod = 'All Time';
   final List<String> _periods = ['Week', 'Month', 'Year', 'All Time'];
 
-  Future<void> _exportData(List<Expense> expenses, [Rect? sharePositionOrigin]) async {
+  Future<void> _exportData(
+    List<Expense> expenses, [
+    Rect? sharePositionOrigin,
+  ]) async {
     try {
       if (expenses.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No data to export')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('No data to export')));
         return;
       }
       final StringBuffer csv = StringBuffer();
       csv.writeln('ID,Amount,Currency,Category,Date,Comment');
       for (var e in expenses) {
-        csv.writeln('${e.id},${e.amount},${e.currency},${e.category},${e.date.toIso8601String()},"${e.comment.replaceAll('"', '""')}"');
+        csv.writeln(
+          '${e.id},${e.amount},${e.currency},${e.category},${e.date.toIso8601String()},"${e.comment.replaceAll('"', '""')}"',
+        );
       }
       final directory = await getTemporaryDirectory();
       final path = '${directory.path}/expenses_export.csv';
@@ -48,7 +56,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to export: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to export: $e')));
       }
     }
   }
@@ -84,7 +94,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       return Scaffold(
         appBar: AppBar(title: const Text('Analytics')),
         body: ErrorStateWidget(
-          message: homeVm.errorMessage ?? expensesVm.errorMessage ?? 'Failed to load data',
+          message:
+              homeVm.errorMessage ??
+              expensesVm.errorMessage ??
+              'Failed to load data',
           onRetry: () {
             homeVm.loadData();
             expensesVm.loadExpenses();
@@ -94,7 +107,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     }
 
     final filteredExpenses = _filterExpensesByPeriod(expensesVm.expenses);
-    double totalExpenses = filteredExpenses.fold(0.0, (sum, e) => sum + e.amount);
+    double totalExpenses = filteredExpenses.fold(
+      0.0,
+      (sum, e) => sum + e.amount,
+    );
 
     final Map<String, double> categoryTotals = {};
     for (var e in filteredExpenses) {
@@ -111,7 +127,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     // Prepare chart data
     final pieData = <_PieData>[];
     if (homeVm.leftovers > 0) {
-      pieData.add(_PieData('Leftovers', homeVm.leftovers, AppColors.primaryAccent));
+      pieData.add(
+        _PieData('Leftovers', homeVm.leftovers, AppColors.primaryAccent),
+      );
     }
     if (totalExpenses > 0) {
       pieData.add(_PieData('Expenses', totalExpenses, AppColors.error));
@@ -120,7 +138,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       pieData.add(_PieData('No Data', 1, AppColors.border));
     }
 
-    final barData = categoryTotals.entries.map((e) => _BarData(e.key, e.value)).toList();
+    final barData = categoryTotals.entries
+        .map((e) => _BarData(e.key, e.value))
+        .toList();
     final symbol = CurrencyHelper.getSymbol(settingsVm.currency);
 
     return Scaffold(
@@ -143,7 +163,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   tooltip: 'Export Data',
                   onPressed: () {
                     final box = context.findRenderObject() as RenderBox?;
-                    final rect = box != null ? (box.localToGlobal(Offset.zero) & box.size) : null;
+                    final rect = box != null
+                        ? (box.localToGlobal(Offset.zero) & box.size)
+                        : null;
                     _exportData(filteredExpenses, rect);
                   },
                 ),
@@ -181,27 +203,35 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: AppColors.cardBackground,
+                        color: Colors.transparent,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
+                        border: Border.all(
+                          color: AppColors.border.withValues(alpha: 0.5),
+                        ),
                       ),
                       child: Row(
                         children: _periods.map((period) {
                           final isSelected = _selectedPeriod == period;
                           return Expanded(
                             child: GestureDetector(
-                              onTap: () => setState(() => _selectedPeriod = period),
+                              onTap: () =>
+                                  setState(() => _selectedPeriod = period),
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 250),
                                 curve: Curves.easeOutCubic,
-                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                ),
                                 decoration: BoxDecoration(
-                                  gradient: isSelected ? AppColors.primaryGradient : null,
+                                  gradient: isSelected
+                                      ? AppColors.primaryGradient
+                                      : null,
                                   borderRadius: BorderRadius.circular(12),
                                   boxShadow: isSelected
                                       ? [
                                           BoxShadow(
-                                            color: AppColors.primaryAccent.withValues(alpha: 0.3),
+                                            color: AppColors.primaryAccent
+                                                .withValues(alpha: 0.3),
                                             blurRadius: 8,
                                             offset: const Offset(0, 2),
                                           ),
@@ -212,8 +242,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                   child: Text(
                                     period,
                                     style: TextStyle(
-                                      color: isSelected ? Colors.white : AppColors.textSecondary,
-                                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
                                       fontSize: 13,
                                     ),
                                   ),
@@ -292,12 +326,16 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: AppColors.secondaryBackground,
+                        color: Colors.transparent,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
+                        border: Border.all(
+                          color: AppColors.border.withValues(alpha: 0.5),
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primaryAccent.withValues(alpha: 0.06),
+                            color: AppColors.primaryAccent.withValues(
+                              alpha: 0.06,
+                            ),
                             blurRadius: 20,
                             offset: const Offset(0, 8),
                           ),
@@ -319,25 +357,18 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                   id: 'Overview',
                                   domainFn: (_PieData data, _) => data.label,
                                   measureFn: (_PieData data, _) => data.value,
-                                  colorFn: (_PieData data, _) => charts.ColorUtil.fromDartColor(data.color),
+                                  colorFn: (_PieData data, _) =>
+                                      charts.ColorUtil.fromDartColor(
+                                        data.color,
+                                      ),
                                   data: pieData,
-                                  labelAccessorFn: (_PieData row, _) => row.label,
-                                )
+                                  labelAccessorFn: (_PieData row, _) =>
+                                      row.label,
+                                ),
                               ],
                               animate: true,
                               defaultRenderer: charts.ArcRendererConfig<String>(
                                 arcWidth: 60,
-                                arcRendererDecorators: [
-                                  charts.ArcLabelDecorator<String>(
-                                    insideLabelStyleSpec: charts.TextStyleSpec(
-                                      color: charts.ColorUtil.fromDartColor(Colors.white),
-                                    ),
-                                    outsideLabelStyleSpec: charts.TextStyleSpec(
-                                      color: charts.ColorUtil.fromDartColor(
-                                          Theme.of(context).brightness == Brightness.dark ? Colors.white : AppColors.textPrimary),
-                                    ),
-                                  )
-                                ],
                               ),
                             ),
                           ),
@@ -345,8 +376,18 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              _buildLegendItem(context, 'Leftovers', AppColors.primaryAccent, homeVm.leftovers),
-                              _buildLegendItem(context, 'Expenses', AppColors.error, totalExpenses),
+                              _buildLegendItem(
+                                context,
+                                'Leftovers',
+                                AppColors.primaryAccent,
+                                homeVm.leftovers,
+                              ),
+                              _buildLegendItem(
+                                context,
+                                'Expenses',
+                                AppColors.error,
+                                totalExpenses,
+                              ),
                             ],
                           ),
                         ],
@@ -372,12 +413,16 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: AppColors.secondaryBackground,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
+                          border: Border.all(
+                            color: AppColors.border.withValues(alpha: 0.5),
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.secondaryAccent.withValues(alpha: 0.06),
+                              color: AppColors.secondaryAccent.withValues(
+                                alpha: 0.06,
+                              ),
                               blurRadius: 20,
                               offset: const Offset(0, 8),
                             ),
@@ -391,7 +436,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: AppColors.secondaryAccent.withValues(alpha: 0.1),
+                                    color: AppColors.secondaryAccent.withValues(
+                                      alpha: 0.1,
+                                    ),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: const Icon(
@@ -403,7 +450,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                 const SizedBox(width: 12),
                                 Text(
                                   'Advanced Analytics',
-                                  style: Theme.of(context).textTheme.displayMedium,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.displayMedium,
                                 ),
                               ],
                             ),
@@ -419,12 +468,17 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                 children: [
                                   Text(
                                     'Efficiency Summary',
-                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                                    style: Theme.of(context).textTheme.bodyLarge
+                                        ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
                                     'You have saved ${efficiency.toStringAsFixed(1)}% of your daily limit in this period.',
-                                    style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -432,7 +486,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             const SizedBox(height: 20),
                             Text(
                               'Expenses by Category',
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                              style: Theme.of(context).textTheme.bodyLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 16),
                             SizedBox(
@@ -441,11 +496,15 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                 [
                                   charts.Series<_BarData, String>(
                                     id: 'Categories',
-                                    domainFn: (_BarData data, _) => data.category,
+                                    domainFn: (_BarData data, _) =>
+                                        data.category,
                                     measureFn: (_BarData data, _) => data.value,
-                                    colorFn: (data, index) => charts.ColorUtil.fromDartColor(AppColors.secondaryAccent),
+                                    colorFn: (data, index) =>
+                                        charts.ColorUtil.fromDartColor(
+                                          AppColors.secondaryAccent,
+                                        ),
                                     data: barData,
-                                  )
+                                  ),
                                 ],
                                 animate: true,
                                 domainAxis: charts.OrdinalAxisSpec(
@@ -453,7 +512,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                     labelRotation: 45,
                                     labelStyle: charts.TextStyleSpec(
                                       color: charts.ColorUtil.fromDartColor(
-                                          Theme.of(context).brightness == Brightness.dark ? Colors.white70 : AppColors.textSecondary),
+                                        Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white70
+                                            : AppColors.textSecondary,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -461,7 +524,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                   renderSpec: charts.GridlineRendererSpec(
                                     labelStyle: charts.TextStyleSpec(
                                       color: charts.ColorUtil.fromDartColor(
-                                          Theme.of(context).brightness == Brightness.dark ? Colors.white70 : AppColors.textSecondary),
+                                        Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white70
+                                            : AppColors.textSecondary,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -481,7 +548,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     );
   }
 
-  Widget _buildLegendItem(BuildContext context, String title, Color color, double value) {
+  Widget _buildLegendItem(
+    BuildContext context,
+    String title,
+    Color color,
+    double value,
+  ) {
     return Column(
       children: [
         Row(
@@ -502,22 +574,29 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            Text(title, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
+            Text(
+              title,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+            ),
           ],
         ),
         const SizedBox(height: 4),
-        Builder(builder: (context) {
-          final settingsVm = Provider.of<SettingsViewModel>(context);
-          final symbol = CurrencyHelper.getSymbol(settingsVm.currency);
-          return Text(
-            '$symbol${value.toStringAsFixed(2)}',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          );
-        }),
+        Builder(
+          builder: (context) {
+            final settingsVm = Provider.of<SettingsViewModel>(context);
+            final symbol = CurrencyHelper.getSymbol(settingsVm.currency);
+            return Text(
+              '$symbol${value.toStringAsFixed(2)}',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            );
+          },
+        ),
       ],
     );
   }
@@ -545,14 +624,14 @@ class _AnimatedStatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.secondaryBackground,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
         boxShadow: [
           BoxShadow(
             color: color.withValues(alpha: 0.08),
             blurRadius: 12,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 0),
           ),
         ],
       ),
@@ -589,7 +668,7 @@ class _AnimatedStatCard extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontSize: 11,
               fontWeight: FontWeight.w500,
             ),

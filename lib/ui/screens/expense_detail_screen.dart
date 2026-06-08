@@ -25,29 +25,32 @@ class ExpenseDetailScreen extends StatelessWidget {
   }
 
   void _retakePhoto(BuildContext context) async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.camera);
-    if (pickedFile != null) {
-      final savedPath = await ImageHelper.saveImageLocally(pickedFile.path);
-      final updated = Expense(
-        id: expense.id,
-        amount: expense.amount,
-        category: expense.category,
-        comment: expense.comment,
-        photoPath: savedPath ?? expense.photoPath,
-        date: expense.date,
-        currency: expense.currency,
-      );
-      if (!context.mounted) return;
-      final vm = Provider.of<ExpensesListViewModel>(context, listen: false);
-      await vm.updateExpense(updated);
-      if (!context.mounted) return;
-      Navigator.of(context).pop();
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => ExpenseDetailScreen(expense: updated),
-        ),
-      );
+    try {
+      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        final savedPath = await ImageHelper.saveImageLocally(pickedFile);
+        final updated = Expense(
+          id: expense.id,
+          amount: expense.amount,
+          category: expense.category,
+          comment: expense.comment,
+          photoPath: savedPath ?? expense.photoPath,
+          date: expense.date,
+          currency: expense.currency,
+        );
+        if (!context.mounted) return;
+        final vm = Provider.of<ExpensesListViewModel>(context, listen: false);
+        await vm.updateExpense(updated);
+        if (!context.mounted) return;
+        Navigator.of(context).pop();
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ExpenseDetailScreen(expense: updated),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
     }
   }
 
@@ -105,7 +108,7 @@ class ExpenseDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Expense Details'),
         backgroundColor: Colors.transparent,
@@ -168,12 +171,16 @@ class ExpenseDetailScreen extends StatelessWidget {
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                     child: Image.file(
                       File(expense.photoPath),
-                      height: 280,
                       fit: BoxFit.cover,
                       width: double.infinity,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: double.infinity, height: 200,
+                        color: AppColors.error.withValues(alpha: 0.1),
+                        child: const Center(child: Icon(Icons.broken_image, color: AppColors.error)),
+                      ),
                     ),
                   ),
                 ),
@@ -184,7 +191,7 @@ class ExpenseDetailScreen extends StatelessWidget {
                   height: 200,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: AppColors.secondaryBackground,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: AppColors.border,
@@ -218,7 +225,7 @@ class ExpenseDetailScreen extends StatelessWidget {
                         Text(
                           'No photo available',
                           style: AppTypography.caption.copyWith(
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -248,7 +255,7 @@ class ExpenseDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.secondaryBackground,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: AppColors.border.withValues(alpha: 0.5),
@@ -340,7 +347,7 @@ class ExpenseDetailScreen extends StatelessWidget {
               Text(
                 'Amount',
                 style: AppTypography.caption.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 2),
@@ -387,14 +394,14 @@ class ExpenseDetailScreen extends StatelessWidget {
               Text(
                 label,
                 style: AppTypography.caption.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 value,
                 style: AppTypography.body.copyWith(
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -423,7 +430,7 @@ class ExpenseDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.secondaryBackground,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: AppColors.border.withValues(alpha: 0.5),
@@ -457,7 +464,7 @@ class ExpenseDetailScreen extends StatelessWidget {
                       Text(
                         'Comment',
                         style: AppTypography.caption.copyWith(
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -465,7 +472,7 @@ class ExpenseDetailScreen extends StatelessWidget {
                       Text(
                         expense.comment,
                         style: AppTypography.body.copyWith(
-                          color: AppColors.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontStyle: FontStyle.italic,
                           height: 1.5,
                         ),
@@ -485,7 +492,7 @@ class ExpenseDetailScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
       decoration: BoxDecoration(
-        color: AppColors.secondaryBackground,
+        color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
             color: AppColors.primaryAccent.withValues(alpha: 0.06),

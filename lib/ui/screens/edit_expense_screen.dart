@@ -52,13 +52,11 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
 
   Future<void> _pickImage() async {
     try {
-      final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
-        final savedPath = await ImageHelper.saveImageLocally(pickedFile.path);
+        final savedPath = await ImageHelper.saveImageLocally(pickedFile);
         if (savedPath != null) {
-          setState(() {
-            _photoPath = savedPath;
-          });
+          setState(() => _photoPath = savedPath);
         }
       }
     } catch (e) {
@@ -192,8 +190,28 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                         : ClipRRect(
                             borderRadius: BorderRadius.circular(16),
                             child: _photoPath.isNotEmpty
-                                ? Image.file(File(_photoPath), fit: BoxFit.cover, width: double.infinity, height: 200)
-                                : Image.file(File(widget.expense.photoPath), fit: BoxFit.cover, width: double.infinity, height: 200),
+                                ? Image.file(
+                                    File(_photoPath),
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: 200,
+                                    errorBuilder: (context, error, stackTrace) => Container(
+                                      width: double.infinity, height: 200,
+                                      color: AppColors.error.withValues(alpha: 0.1),
+                                      child: const Center(child: Icon(Icons.broken_image, color: AppColors.error)),
+                                    ),
+                                  )
+                                : Image.file(
+                                    File(widget.expense.photoPath),
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: 200,
+                                    errorBuilder: (context, error, stackTrace) => Container(
+                                      width: double.infinity, height: 200,
+                                      color: AppColors.error.withValues(alpha: 0.1),
+                                      child: const Center(child: Icon(Icons.broken_image, color: AppColors.error)),
+                                    ),
+                                  ),
                           ),
                   ),
                 ),

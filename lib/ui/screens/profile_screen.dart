@@ -123,9 +123,9 @@ class _ProfileScreenState extends State<ProfileScreen>
   Future<void> _pickPhoto() async {
     try {
       final pickedFile =
-          await ImagePicker().pickImage(source: ImageSource.camera);
+          await ImagePicker().pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
-        final path = await ImageHelper.saveImageLocally(pickedFile.path);
+        final path = await ImageHelper.saveImageLocally(pickedFile);
         if (path != null) {
           setState(() {
             _photoPath = path;
@@ -166,7 +166,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
     return UnfocusWrapper(
       child: Scaffold(
-        backgroundColor: AppColors.primaryBackground,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: body,
       ),
     );
@@ -193,7 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                     index: 1,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: AppColors.secondaryBackground,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -211,7 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           Text(
                             'Personal Info',
                             style: AppTypography.headline2.copyWith(
-                              color: AppColors.textPrimary,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -220,10 +220,13 @@ class _ProfileScreenState extends State<ProfileScreen>
                             validator: ValidationHelpers.validateOptionalText,
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
+                            style: AppTypography.body.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
                             decoration: InputDecoration(
                               labelText: 'Name',
                               labelStyle: AppTypography.body.copyWith(
-                                color: AppColors.textSecondary,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                               prefixIcon: Container(
                                 margin: const EdgeInsets.only(
@@ -239,7 +242,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 minWidth: 48,
                               ),
                               filled: true,
-                              fillColor: AppColors.cardBackground,
+                              fillColor: Theme.of(context).cardColor,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -285,10 +288,13 @@ class _ProfileScreenState extends State<ProfileScreen>
                             validator: ValidationHelpers.validateAmount,
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
+                            style: AppTypography.body.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
                             decoration: InputDecoration(
                               labelText: 'Daily Limit',
                               labelStyle: AppTypography.body.copyWith(
-                                color: AppColors.textSecondary,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                               prefixIcon: Container(
                                 margin: const EdgeInsets.only(
@@ -304,7 +310,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 minWidth: 48,
                               ),
                               filled: true,
-                              fillColor: AppColors.cardBackground,
+                              fillColor: Theme.of(context).cardColor,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -353,7 +359,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       child: Text(
                         'Save Profile',
                         style: AppTypography.body.copyWith(
-                          color: AppColors.secondaryBackground,
+                          color: Theme.of(context).colorScheme.onPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -378,7 +384,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         child: Text(
                           'Skip for now',
                           style: AppTypography.body.copyWith(
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -434,9 +440,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                     padding: const EdgeInsets.only(left: 8),
                     child: IconButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back_ios_rounded,
-                        color: AppColors.secondaryBackground,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   )
@@ -446,7 +452,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   child: Text(
                     'Profile',
                     style: AppTypography.headline1.copyWith(
-                      color: AppColors.secondaryBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -459,7 +465,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       child: Text(
                         'Skip',
                         style: AppTypography.body.copyWith(
-                          color: AppColors.secondaryBackground
+                          color: Theme.of(context).colorScheme.onSurface
                               .withValues(alpha: 0.8),
                           fontWeight: FontWeight.w500,
                         ),
@@ -483,9 +489,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          AppColors.secondaryBackground
+                          Theme.of(context).colorScheme.onSurface
                               .withValues(alpha: 0.8),
-                          AppColors.secondaryBackground
+                          Theme.of(context).colorScheme.onSurface
                               .withValues(alpha: 0.4),
                         ],
                       ),
@@ -499,11 +505,15 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ),
                     child: CircleAvatar(
                       radius: 56,
-                      backgroundColor: AppColors.cardBackground,
-                      backgroundImage: _photoPath.isNotEmpty
+                      backgroundColor: Theme.of(context).cardColor,
+                      backgroundImage: (_photoPath.isNotEmpty && 
+                                        File(_photoPath).existsSync() &&
+                                        File(_photoPath).lengthSync() > 0)
                           ? FileImage(File(_photoPath))
                           : null,
-                      child: _photoPath.isEmpty
+                      child: (_photoPath.isEmpty ||
+                              !File(_photoPath).existsSync() ||
+                              File(_photoPath).lengthSync() == 0)
                           ? const Icon(
                               Icons.person_rounded,
                               size: 48,
@@ -519,25 +529,13 @@ class _ProfileScreenState extends State<ProfileScreen>
                       width: 36,
                       height: 36,
                       decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
                         shape: BoxShape.circle,
-                        gradient: AppColors.primaryGradient,
-                        border: Border.all(
-                          color: AppColors.secondaryBackground,
-                          width: 2.5,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primaryAccent
-                                .withValues(alpha: 0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.camera_alt_rounded,
-                        size: 16,
-                        color: AppColors.secondaryBackground,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        size: 20,
                       ),
                     ),
                   ),
@@ -551,7 +549,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   : 'Edit your profile',
               style: AppTypography.caption.copyWith(
                 color:
-                    AppColors.secondaryBackground.withValues(alpha: 0.8),
+                    Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.8),
               ),
             ),
           ],

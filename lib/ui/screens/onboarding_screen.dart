@@ -65,7 +65,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -171,7 +171,7 @@ class _OnboardingPage extends StatelessWidget {
             child: Text(
               title,
               style: AppTypography.headline1.copyWith(
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
                 height: 1.3,
               ),
               textAlign: TextAlign.center,
