@@ -6,9 +6,8 @@ Take control of your personal finances with smart daily limits and intuitive exp
 ---
 
 ## 🚀 Status
-- **Google Play Store:** ✅ Verified & Published
 - **Current Version:** 1.0.0
-- **Build:** Flutter Stable Channel
+- **Build:** Flutter Flutter 3.35.5
 
 ## 📖 Overview
 A specialized mobile solution developed for tracking daily expenses and managing a personal budget. Designed with a premium, fully responsive UI to engage users through interactive financial analytics and smart daily limits.
@@ -22,10 +21,10 @@ A specialized mobile solution developed for tracking daily expenses and managing
 
 ## 📸 Screenshots
 <p align="center">
-  <img src="screenshots/1.jpg" width="250" alt="Main Screen">
-  <img src="screenshots/2.jpg" width="250" alt="Expences Screen">
-  <img src="screenshots/3.jpg" width="250" alt="Wheel Screen">
-  <img src="screenshots/4.jpg" width="250" alt="Expence details Screen">
-  <img src="screenshots/5.jpg" width="250" alt="Settings Screen">
-  <img src="screenshots/6.jpg" width="250" alt="Edit expence Screen">
+  <img src="screenshots/1.png" width="250" alt="Main Screen">
+  <img src="screenshots/2.png" width="250" alt="Expences Screen">
+  <img src="screenshots/3.png" width="250" alt="Wheel Screen">
+  <img src="screenshots/4.png" width="250" alt="Expence details Screen">
+  <img src="screenshots/5.png" width="250" alt="Settings Screen">
+  <img src="screenshots/6.png" width="250" alt="Edit expence Screen">
 </p>
