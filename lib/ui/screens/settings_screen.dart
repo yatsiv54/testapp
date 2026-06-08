@@ -9,7 +9,7 @@ import '../../core/utils/notification_service.dart';
 import '../widgets/loading_shimmer_widget.dart';
 import 'profile_screen.dart';
 import '../widgets/error_state_widget.dart';
-
+import '../../dev_test/dev_test.dart';
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -152,7 +152,7 @@ class SettingsScreen extends StatelessWidget {
                     leading: const Icon(Icons.share, color: AppColors.primaryAccent),
                     title: const Text('Share App'),
                     onTap: () {
-                      SettingsActions.shareApp();
+                      DevTest.shareApp();
                     },
                   ),
                   const Divider(height: 1, indent: 56),
@@ -160,7 +160,7 @@ class SettingsScreen extends StatelessWidget {
                     leading: const Icon(Icons.privacy_tip, color: AppColors.primaryAccent),
                     title: const Text('Privacy Policy'),
                     onTap: () {
-                      SettingsActions.openPrivacyPolicy();
+                      DevTest.openPrivacyPolicy();
                     },
                   ),
                   const Divider(height: 1, indent: 56),
