@@ -22,7 +22,10 @@ A specialized mobile solution developed for tracking daily expenses and managing
 
 ## 📸 Screenshots
 <p align="center">
-  <img src="screenshots/home_screen.png" width="250" alt="Main Screen">
-  <img src="screenshots/analytics_screen.png" width="250" alt="Analytics Screen">
-  <img src="screenshots/profile_screen.png" width="250" alt="Profile Screen">
+  <img src="screenshots/1.jpg" width="250" alt="Main Screen">
+  <img src="screenshots/2.jpg" width="250" alt="Expences Screen">
+  <img src="screenshots/3.jpg" width="250" alt="Wheel Screen">
+  <img src="screenshots/4.jpg" width="250" alt="Expence details Screen">
+  <img src="screenshots/5.jpg" width="250" alt="Settings Screen">
+  <img src="screenshots/6.jpg" width="250" alt="Edit expence Screen">
 </p>
