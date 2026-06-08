@@ -112,6 +112,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                   controller: _amountController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   validator: ValidationHelpers.validateAmount,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: const InputDecoration(
                     labelText: 'Amount',
                     border: OutlineInputBorder(),
@@ -161,6 +162,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                   controller: _commentController,
                   maxLines: 3,
                   validator: ValidationHelpers.validateOptionalText,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: const InputDecoration(
                     labelText: 'Comment (optional)',
                     border: OutlineInputBorder(),

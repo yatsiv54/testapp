@@ -91,37 +91,79 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                GestureDetector(
-                  onTap: () async {
-                    try {
-                      final picked = await ImagePicker().pickImage(source: ImageSource.camera);
-                      if (picked != null) {
-                        final path = await ImageHelper.saveImageLocally(picked.path);
-                        if (path != null) {
-                          setState(() {
-                            _photoPath = path;
-                          });
-                        }
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-                      }
-                    }
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  duration: const Duration(milliseconds: 600),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, value, child) {
+                    return Opacity(
+                      opacity: value,
+                      child: Transform.translate(
+                        offset: Offset(0, 20 * (1 - value)),
+                        child: child,
+                      ),
+                    );
                   },
-                  child: Container(
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Center(
+                  child: GestureDetector(
+                    onTap: () async {
+                      try {
+                        final picked = await ImagePicker().pickImage(source: ImageSource.camera);
+                        if (picked != null) {
+                          final path = await ImageHelper.saveImageLocally(picked.path);
+                          if (path != null) {
+                            setState(() => _photoPath = path);
+                          }
+                        }
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to take photo: $e')));
+                      }
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      height: 220,
+                      decoration: BoxDecoration(
+                        color: AppColors.cardBackground,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: _photoPath.isEmpty ? AppColors.border : AppColors.primaryAccent,
+                          width: _photoPath.isEmpty ? 2 : 3,
+                        ),
+                        image: _photoPath.isNotEmpty
+                            ? DecorationImage(
+                                image: FileImage(File(_photoPath)),
+                                fit: BoxFit.cover,
+                                colorFilter: ColorFilter.mode(
+                                  Colors.black.withValues(alpha: 0.2),
+                                  BlendMode.darken,
+                                ),
+                              )
+                            : null,
+                        boxShadow: [
+                          if (_photoPath.isNotEmpty)
+                            BoxShadow(
+                              color: AppColors.primaryAccent.withValues(alpha: 0.2),
+                              blurRadius: 16,
+                              offset: const Offset(0, 8),
+                            )
+                        ],
+                      ),
                       child: _photoPath.isEmpty
                           ? Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.camera_alt, size: 48, color: AppColors.primaryAccent),
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primaryAccent.withValues(alpha: 0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.add_a_photo_rounded,
+                                    size: 40,
+                                    color: AppColors.primaryAccent,
+                                  ),
+                                ),
                                 const SizedBox(height: 16),
                                 Text('Tap to capture receipt', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                               ],

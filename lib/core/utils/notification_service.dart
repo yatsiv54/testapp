@@ -25,8 +25,8 @@ class NotificationService {
     // 20:00 Add Expenses Reminder
     await _scheduleDailyNotification(
       id: 1,
-      title: 'Time to track expenses!',
-      body: 'Don\'t forget to add your daily expenses to stay within your limits.',
+      title: 'Don\'t forget to log today\'s expenses!',
+      body: 'Track your daily spending and grow your leftovers.',
       hour: 20,
       minute: 0,
     );
@@ -34,8 +34,8 @@ class NotificationService {
     // 19:00 Wheel of Fortune Reminder
     await _scheduleDailyNotification(
       id: 2,
-      title: 'Wheel is ready!',
-      body: 'Your daily Wheel spin is ready. Spin to increase your leftovers!',
+      title: 'Wheel mode is ready!',
+      body: 'Spin the wheel to multiply your leftovers today.',
       hour: 19,
       minute: 0,
     );

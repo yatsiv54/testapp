@@ -7,18 +7,26 @@ class ExpensesListViewModel extends ChangeNotifier {
   
   List<Expense> _expenses = [];
   bool _isLoading = true;
+  String? _errorMessage;
 
   List<Expense> get expenses => _expenses;
   bool get isLoading => _isLoading;
+  bool get hasError => _errorMessage != null;
+  String? get errorMessage => _errorMessage;
 
   Future<void> loadExpenses() async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
-    _expenses = await _storage.getExpenses();
-
-    _isLoading = false;
-    notifyListeners();
+    try {
+      _expenses = await _storage.getExpenses();
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> addExpense(Expense expense) async {

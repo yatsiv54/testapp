@@ -30,6 +30,8 @@
 	<string>We need access to your camera so you can take photos of receipts.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to your photo library to attach receipts to expenses.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>We need access to save exports to your photo library or files.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>We need access to your microphone for video recording.</string>
 	<key>UIApplicationSceneManifest</key>

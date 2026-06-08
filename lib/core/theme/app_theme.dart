@@ -9,6 +9,17 @@ class AppTheme {
       primaryColor: AppColors.primaryAccent,
       scaffoldBackgroundColor: AppColors.primaryBackground,
       fontFamily: AppTypography.fontFamily,
+      splashColor: AppColors.primaryAccent.withValues(alpha: 0.08),
+      highlightColor: AppColors.primaryAccent.withValues(alpha: 0.05),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+        },
+      ),
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.primaryBackground,
         elevation: 0,
@@ -31,7 +42,7 @@ class AppTheme {
           ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent, // Handled by container gradient
+          backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
@@ -76,13 +87,35 @@ class AppTheme {
       ),
       cardTheme: CardThemeData(
         color: AppColors.secondaryBackground,
-        elevation: 10,
-
-        shadowColor: AppColors.primaryAccent.withValues(alpha: 0.5),
+        elevation: 6,
+        shadowColor: AppColors.primaryAccent.withValues(alpha: 0.15),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Colors.blueAccent, width: 1),
         ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: AppColors.secondaryBackground,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        elevation: 8,
+        titleTextStyle: AppTypography.headline2.copyWith(
+          color: AppColors.textPrimary,
+        ),
+        contentTextStyle: AppTypography.body.copyWith(
+          color: AppColors.textSecondary,
+        ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.textPrimary,
+        contentTextStyle: AppTypography.body.copyWith(
+          color: Colors.white,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 4,
       ),
     );
   }
@@ -93,6 +126,17 @@ class AppTheme {
       primaryColor: AppColors.primaryAccent,
       scaffoldBackgroundColor: const Color(0xFF121212),
       fontFamily: AppTypography.fontFamily,
+      splashColor: AppColors.primaryAccent.withValues(alpha: 0.10),
+      highlightColor: AppColors.primaryAccent.withValues(alpha: 0.06),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+        },
+      ),
       appBarTheme: AppBarTheme(
         backgroundColor: const Color(0xFF1E1E1E),
         elevation: 0,
@@ -152,7 +196,38 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
         elevation: 8,
       ),
-      cardColor: const Color(0xFF1E1E1E),
+      cardTheme: CardThemeData(
+        color: const Color(0xFF1E1E1E),
+        elevation: 2,
+        shadowColor: AppColors.primaryAccent.withValues(alpha: 0.10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: const Color(0xFF1E1E1E),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        elevation: 8,
+        titleTextStyle: AppTypography.headline2.copyWith(
+          color: Colors.white,
+        ),
+        contentTextStyle: AppTypography.body.copyWith(
+          color: Colors.white70,
+        ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: const Color(0xFF2C2C2C),
+        contentTextStyle: AppTypography.body.copyWith(
+          color: Colors.white,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 4,
+      ),
     );
   }
 }

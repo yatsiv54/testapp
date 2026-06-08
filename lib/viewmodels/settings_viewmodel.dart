@@ -5,6 +5,7 @@ class SettingsViewModel extends ChangeNotifier {
   final LocalStorageService _storage = LocalStorageService();
 
   bool _isLoading = true;
+  String? _errorMessage;
   String _currency = 'USD';
   bool _notificationsEnabled = false;
   bool _advancedAnalytics = false;
@@ -12,6 +13,8 @@ class SettingsViewModel extends ChangeNotifier {
   String _themeMode = 'light';
 
   bool get isLoading => _isLoading;
+  bool get hasError => _errorMessage != null;
+  String? get errorMessage => _errorMessage;
   String get currency => _currency;
   bool get notificationsEnabled => _notificationsEnabled;
   bool get advancedAnalytics => _advancedAnalytics;
@@ -20,16 +23,21 @@ class SettingsViewModel extends ChangeNotifier {
 
   Future<void> loadSettings() async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
-    _currency = await _storage.getCurrency();
-    _notificationsEnabled = await _storage.getNotificationsEnabled();
-    _advancedAnalytics = await _storage.getAdvancedAnalytics();
-    _requirePhoto = await _storage.getRequirePhoto();
-    _themeMode = await _storage.getThemeMode();
-
-    _isLoading = false;
-    notifyListeners();
+    try {
+      _currency = await _storage.getCurrency();
+      _notificationsEnabled = await _storage.getNotificationsEnabled();
+      _advancedAnalytics = await _storage.getAdvancedAnalytics();
+      _requirePhoto = await _storage.getRequirePhoto();
+      _themeMode = await _storage.getThemeMode();
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> setCurrency(String val) async {

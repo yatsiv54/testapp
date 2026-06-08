@@ -1,39 +1,126 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
+enum ShimmerType { home, list, detail, settings, analytics }
+
 class LoadingShimmerWidget extends StatelessWidget {
-  const LoadingShimmerWidget({super.key});
+  final ShimmerType type;
+  const LoadingShimmerWidget({super.key, this.type = ShimmerType.home});
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: 6,
-      itemBuilder: (context, index) {
-        return Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
-          child: Card(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            margin: const EdgeInsets.only(bottom: 16),
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(12),
-              leading: Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              title: Container(height: 16, width: double.infinity, color: Colors.white),
-              subtitle: Container(height: 12, width: 100, color: Colors.white, margin: const EdgeInsets.only(top: 8)),
-              trailing: Container(height: 20, width: 60, color: Colors.white),
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final baseColor = isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE8EDF5);
+    final highlightColor = isDark ? const Color(0xFF3D3D3D) : const Color(0xFFF5F8FC);
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+
+    Widget buildBox(double height, [double? width, double borderRadius = 16]) {
+      return Container(
+        height: height,
+        width: width ?? double.infinity,
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(borderRadius),
+        ),
+      );
+    }
+
+    Widget content;
+
+    switch (type) {
+      case ShimmerType.home:
+        content = ListView(
+          padding: const EdgeInsets.all(16),
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            buildBox(120),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(child: buildBox(72)),
+                const SizedBox(width: 12),
+                Expanded(child: buildBox(72)),
+                const SizedBox(width: 12),
+                Expanded(child: buildBox(72)),
+              ],
             ),
+            const SizedBox(height: 24),
+            ...List.generate(3, (index) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: buildBox(80),
+            )),
+          ],
+        );
+        break;
+      case ShimmerType.list:
+        content = ListView.builder(
+          padding: const EdgeInsets.all(16),
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: 8,
+          itemBuilder: (context, index) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: buildBox(80),
           ),
         );
-      },
+        break;
+      case ShimmerType.detail:
+        content = ListView(
+          padding: const EdgeInsets.all(16),
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            buildBox(200, double.infinity, 24),
+            const SizedBox(height: 24),
+            buildBox(40),
+            const SizedBox(height: 16),
+            buildBox(100),
+            const SizedBox(height: 16),
+            buildBox(60),
+          ],
+        );
+        break;
+      case ShimmerType.settings:
+        content = ListView(
+          padding: const EdgeInsets.all(16),
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            buildBox(30, 150),
+            const SizedBox(height: 16),
+            buildBox(60),
+            const SizedBox(height: 12),
+            buildBox(60),
+            const SizedBox(height: 32),
+            buildBox(30, 150),
+            const SizedBox(height: 16),
+            buildBox(60),
+          ],
+        );
+        break;
+      case ShimmerType.analytics:
+        content = ListView(
+          padding: const EdgeInsets.all(16),
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            buildBox(150),
+            const SizedBox(height: 24),
+            buildBox(250),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(child: buildBox(100)),
+                const SizedBox(width: 16),
+                Expanded(child: buildBox(100)),
+              ],
+            )
+          ],
+        );
+        break;
+    }
+
+    return Shimmer.fromColors(
+      baseColor: baseColor,
+      highlightColor: highlightColor,
+      child: content,
     );
   }
 }

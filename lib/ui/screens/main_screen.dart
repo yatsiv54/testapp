@@ -53,10 +53,10 @@ class _MainScreenState extends State<MainScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Container(
             decoration: BoxDecoration(
-              color: AppColors.primaryAccent,
+              color: AppColors.primaryAccent.withValues(alpha: 0.7), // Translucent matte blue
               borderRadius: BorderRadius.circular(32),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.3),
+                color: Colors.grey.withValues(alpha: 0.5), // Grey border
                 width: 1,
               ),
               boxShadow: [

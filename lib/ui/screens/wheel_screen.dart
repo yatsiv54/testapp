@@ -103,6 +103,18 @@ class _WheelScreenState extends State<WheelScreen> with SingleTickerProviderStat
 
     setState(() => _spinning = false);
 
+    setState(() {
+      _spinning = false;
+      _showConfetti = true;
+    });
+
+    // Hide confetti after a few seconds
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() => _showConfetti = false);
+      }
+    });
+
     if (!mounted) return;
     
     final symbol = CurrencyHelper.getSymbol(settingsVm.currency);
@@ -118,17 +130,21 @@ class _WheelScreenState extends State<WheelScreen> with SingleTickerProviderStat
     );
   }
 
+  bool _showConfetti = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Daily Wheel'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Center(
+      body: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
               child: Stack(
                 alignment: Alignment.topCenter,
                 clipBehavior: Clip.none,
@@ -199,8 +215,16 @@ class _WheelScreenState extends State<WheelScreen> with SingleTickerProviderStat
                 child: const Text('SPIN NOW!', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
               ),
             ),
-          ],
-        ),
+              ],
+            ),
+          ),
+          if (_showConfetti)
+            const Positioned.fill(
+              child: IgnorePointer(
+                child: _ConfettiOverlay(),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -262,4 +286,83 @@ class _WheelPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _ConfettiOverlay extends StatefulWidget {
+  const _ConfettiOverlay();
+  @override
+  State<_ConfettiOverlay> createState() => _ConfettiOverlayState();
+}
+
+class _ConfettiOverlayState extends State<_ConfettiOverlay> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  final List<_Particle> _particles = [];
+  final Random _rnd = Random();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 3))..forward();
+    _controller.addListener(() => setState(() {}));
+    
+    // Generate particles
+    for (int i = 0; i < 100; i++) {
+      _particles.add(_Particle(
+        x: _rnd.nextDouble(),
+        y: -0.2 - _rnd.nextDouble() * 0.5,
+        vx: (_rnd.nextDouble() - 0.5) * 0.5,
+        vy: 0.5 + _rnd.nextDouble() * 1.5,
+        color: [AppColors.primaryAccent, AppColors.secondaryAccent, AppColors.warning, AppColors.success][_rnd.nextInt(4)],
+        size: 5 + _rnd.nextDouble() * 10,
+        rotSpd: (_rnd.nextDouble() - 0.5) * 4,
+      ));
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _ConfettiPainter(_particles, _controller.value),
+    );
+  }
+}
+
+class _Particle {
+  double x, y, vx, vy;
+  Color color;
+  double size;
+  double rotSpd;
+  _Particle({required this.x, required this.y, required this.vx, required this.vy, required this.color, required this.size, required this.rotSpd});
+}
+
+class _ConfettiPainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double progress;
+
+  _ConfettiPainter(this.particles, this.progress);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..style = PaintingStyle.fill;
+    for (var p in particles) {
+      final cx = p.x * size.width + p.vx * size.width * progress;
+      final cy = p.y * size.height + p.vy * size.height * progress + (400 * progress * progress); // Gravity
+      
+      canvas.save();
+      canvas.translate(cx, cy);
+      canvas.rotate(progress * p.rotSpd * 10);
+      paint.color = p.color.withValues(alpha: (1 - progress).clamp(0.0, 1.0));
+      canvas.drawRect(Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size * 0.6), paint);
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _ConfettiPainter oldDelegate) => true;
 }
