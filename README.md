@@ -1,17 +1,28 @@
-# tz_app_2_salary_leftovers_collector
+## Salary Leftovers Collector
 
-A new Flutter project.
+![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)
 
-## Getting Started
+Take control of your personal finances with smart daily limits and intuitive expense tracking. Watch your savings grow by managing your daily leftovers effectively.
+---
 
-This project is a starting point for a Flutter application.
+## 🚀 Status
+- **Google Play Store:** ✅ Verified & Published
+- **Current Version:** 1.0.0
+- **Build:** Flutter Stable Channel
 
-A few resources to get you started if this is your first Flutter project:
+## 📖 Overview
+A specialized mobile solution developed for tracking daily expenses and managing a personal budget. Designed with a premium, fully responsive UI to engage users through interactive financial analytics and smart daily limits.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## ✨ Key Features
+* **Smart Budgeting:** Set a daily spending limit and track your available balance in real-time.
+* **Expense Tracking:** Easily log your transactions with photos, categories, and precise amounts.
+* **Advanced Analytics:** Gain data-driven insights into your spending habits with interactive charts and period filtering (Daily, Weekly, Monthly).
+* **Premium UI/UX:** A stunning, modern interface with seamless Dark & Light mode adaptation and micro-animations.
+* **Personalized Dashboard:** A central hub to view your remaining daily limit, recent expenses, and quick action shortcuts.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📸 Screenshots
+<p align="center">
+  <img src="screenshots/home_screen.png" width="250" alt="Main Screen">
+  <img src="screenshots/analytics_screen.png" width="250" alt="Analytics Screen">
+  <img src="screenshots/profile_screen.png" width="250" alt="Profile Screen">
+</p>
