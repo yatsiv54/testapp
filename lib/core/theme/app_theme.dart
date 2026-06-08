@@ -11,7 +11,7 @@ class AppTheme {
       fontFamily: AppTypography.fontFamily,
       splashColor: AppColors.primaryAccent.withValues(alpha: 0.08),
       highlightColor: AppColors.primaryAccent.withValues(alpha: 0.05),
-      pageTransitionsTheme: const PageTransitionsTheme(
+      pageTransitionsTheme: PageTransitionsTheme(
         builders: {
           TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
           TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
@@ -128,7 +128,7 @@ class AppTheme {
       fontFamily: AppTypography.fontFamily,
       splashColor: AppColors.primaryAccent.withValues(alpha: 0.10),
       highlightColor: AppColors.primaryAccent.withValues(alpha: 0.06),
-      pageTransitionsTheme: const PageTransitionsTheme(
+      pageTransitionsTheme: PageTransitionsTheme(
         builders: {
           TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
           TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
