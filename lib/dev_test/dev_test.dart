@@ -13,8 +13,9 @@ class DevTest {
 
   /// Shares the app using share_plus
   static Future<void> shareApp(BuildContext context) async {
-    const String shareText = 'Try this app! :) {APPSTORE_LINK}';
-    
+    const String shareText =
+        'Try this app! :) {APPSTORE_LINK} Salary Leftovers Collector';
+
     // Provide a sharePositionOrigin for iPad support
     final RenderBox? box = context.findRenderObject() as RenderBox?;
     if (box != null) {

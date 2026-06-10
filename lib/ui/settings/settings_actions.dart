@@ -19,7 +19,7 @@ class SettingsActions {
   }
 
   static Future<void> shareApp() async {
-    await Share.share('Try this app! :) {APPSTORE_LINK}');
+    await Share.share('Try this app! :) {APPSTORE_LINK} Salary Leftovers Collector');
   }
   
   static Future<void> requestNotificationsPermission() async {
