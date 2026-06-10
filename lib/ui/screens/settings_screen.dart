@@ -127,7 +127,14 @@ class SettingsScreen extends StatelessWidget {
                     value: vm.notificationsEnabled,
                     onChanged: (val) async {
                       if (val) {
-                        final bool granted = await NotificationService().requestPermissions();
+                        bool granted = false;
+                        try {
+                          granted = await NotificationService().requestPermissions();
+                        } catch (e) {
+                          debugPrint('Error requesting permissions: $e');
+                          granted = false;
+                        }
+
                         if (granted) {
                           try {
                             await NotificationService().scheduleDailyReminders();

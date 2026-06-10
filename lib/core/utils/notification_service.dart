@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -24,10 +25,8 @@ class NotificationService {
 
   Future<bool> requestPermissions() async {
     if (Platform.isIOS) {
-      final bool? result = await _notificationsPlugin
-          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
-          ?.requestPermissions(alert: true, badge: true, sound: true);
-      return result ?? false;
+      final status = await Permission.notification.request();
+      return status.isGranted;
     } else if (Platform.isAndroid) {
       final androidImplementation = _notificationsPlugin
           .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
