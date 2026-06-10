@@ -170,7 +170,7 @@ class SettingsScreen extends StatelessWidget {
                     leading: const Icon(Icons.share, color: AppColors.primaryAccent),
                     title: const Text('Share App'),
                     onTap: () {
-                      DevTest.shareApp();
+                      DevTest.shareApp(context);
                     },
                   ),
                   const Divider(height: 1, indent: 56),
