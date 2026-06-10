@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import 'onboarding_screen.dart';
@@ -96,12 +95,7 @@ class _PreloaderScreenState extends State<PreloaderScreen>
   Future<void> _initApp() async {
     final stopwatch = Stopwatch()..start();
 
-    _updateStatus('Requesting permissions...');
-    await [
-      Permission.camera,
-      if (Platform.isAndroid) Permission.storage,
-      if (Platform.isIOS) Permission.photos,
-    ].request();
+    _updateStatus('Checking local DB availability...');
 
     if (!mounted) return;
 

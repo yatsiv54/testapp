@@ -26,9 +26,8 @@ class ExpenseDetailScreen extends StatelessWidget {
 
   void _retakePhoto(BuildContext context) async {
     try {
-      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        final savedPath = await ImageHelper.saveImageLocally(pickedFile);
+      final savedPath = await ImageHelper.pickImage(context);
+      if (savedPath != null) {
         final updated = Expense(
           id: expense.id,
           amount: expense.amount,
@@ -155,7 +154,7 @@ class ExpenseDetailScreen extends StatelessWidget {
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: expense.photoPath.isNotEmpty
+        child: (expense.photoPath.isNotEmpty && File(expense.photoPath).existsSync())
             ? Hero(
                 tag: 'expense_photo_${expense.id}',
                 child: Container(

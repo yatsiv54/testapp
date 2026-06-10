@@ -434,7 +434,7 @@ class _ExpenseCardState extends State<_ExpenseCard> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(11),
-        child: widget.expense.photoPath.isNotEmpty
+        child: (widget.expense.photoPath.isNotEmpty && File(widget.expense.photoPath).existsSync())
             ? Image.file(
                 File(widget.expense.photoPath),
                 fit: BoxFit.cover,

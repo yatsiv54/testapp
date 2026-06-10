@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../../core/utils/image_helper.dart';
 
 class UserProfile {
   final String name;
@@ -22,7 +23,7 @@ class UserProfile {
   factory UserProfile.fromMap(Map<String, dynamic> map) {
     return UserProfile(
       name: map['name'] ?? '',
-      photoPath: map['photoPath'] ?? '',
+      photoPath: ImageHelper.getAbsolutePath(map['photoPath'] ?? ''),
       dailyLimit: map['dailyLimit']?.toDouble() ?? 0.0,
     );
   }

@@ -52,12 +52,9 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
 
   Future<void> _pickImage() async {
     try {
-      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        final savedPath = await ImageHelper.saveImageLocally(pickedFile);
-        if (savedPath != null) {
-          setState(() => _photoPath = savedPath);
-        }
+      final path = await ImageHelper.pickImage(context);
+      if (path != null) {
+        setState(() => _photoPath = path);
       }
     } catch (e) {
       if (mounted) {
@@ -182,14 +179,21 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
                         ? Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.camera_alt, size: 48, color: AppColors.primaryAccent),
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryAccent.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.add_a_photo_rounded, size: 40, color: AppColors.primaryAccent),
+                              ),
                               const SizedBox(height: 16),
                               Text('Tap to capture receipt', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                             ],
                           )
                         : ClipRRect(
                             borderRadius: BorderRadius.circular(16),
-                            child: _photoPath.isNotEmpty
+                            child: (_photoPath.isNotEmpty && File(_photoPath).existsSync())
                                 ? Image.file(
                                     File(_photoPath),
                                     fit: BoxFit.cover,

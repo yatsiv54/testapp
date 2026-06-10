@@ -107,14 +107,11 @@ class _CreateExpenseScreenState extends State<CreateExpenseScreen> {
                   child: GestureDetector(
                     onTap: () async {
                       try {
-                        final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-                        if (picked != null) {
-                          final path = await ImageHelper.saveImageLocally(picked);
-                          if (path != null) {
-                            setState(() {
-                              _photoPath = path;
-                            });
-                          }
+                        final path = await ImageHelper.pickImage(context);
+                        if (path != null) {
+                          setState(() {
+                            _photoPath = path;
+                          });
                         }
                       } catch (e) {
                         if (!context.mounted) return;

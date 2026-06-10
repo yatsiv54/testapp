@@ -535,7 +535,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       ),
                                       borderRadius: BorderRadius.circular(14),
                                     ),
-                                    child: expense.photoPath.isNotEmpty
+                                    child: (expense.photoPath.isNotEmpty && File(expense.photoPath).existsSync())
                                         ? ClipRRect(
                                             borderRadius: BorderRadius.circular(
                                               14,

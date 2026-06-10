@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'viewmodels/home_viewmodel.dart';
@@ -7,10 +8,16 @@ import 'viewmodels/profile_viewmodel.dart';
 import 'viewmodels/settings_viewmodel.dart';
 import 'ui/screens/preloader_screen.dart';
 import 'core/utils/notification_service.dart';
+import 'core/utils/image_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   await NotificationService().initialize();
+  await ImageHelper.initialize();
   runApp(const MyApp());
 }
 

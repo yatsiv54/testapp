@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../../core/utils/image_helper.dart';
 
 class Expense {
   final String id;
@@ -37,7 +38,7 @@ class Expense {
       amount: map['amount'],
       category: map['category'],
       comment: map['comment'],
-      photoPath: map['photoPath'],
+      photoPath: ImageHelper.getAbsolutePath(map['photoPath'] ?? ''),
       date: DateTime.parse(map['date']),
       currency: map['currency'] ?? 'USD', // Fallback for old records
     );

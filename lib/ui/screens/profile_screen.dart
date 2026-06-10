@@ -122,15 +122,11 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   Future<void> _pickPhoto() async {
     try {
-      final pickedFile =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        final path = await ImageHelper.saveImageLocally(pickedFile);
-        if (path != null) {
-          setState(() {
-            _photoPath = path;
-          });
-        }
+      final path = await ImageHelper.pickImage(context);
+      if (path != null) {
+        setState(() {
+          _photoPath = path;
+        });
       }
     } catch (e) {
       if (mounted) {
