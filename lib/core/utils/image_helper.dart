@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
@@ -69,41 +70,18 @@ class ImageHelper {
 
     if (source == null) return null;
 
-    // Explicit permission requests to throw to settings if rejected
-    if (source == ImageSource.camera) {
-      var status = await Permission.camera.status;
-      if (status.isDenied) {
-        status = await Permission.camera.request();
-      }
-      if (status.isPermanentlyDenied) {
-        if (context.mounted) await _showSettingsDialog(context, 'Camera');
-        return null;
-      } else if (!status.isGranted) {
-        return null; // Denied but not permanently
-      }
-    } else {
-      if (Platform.isIOS) {
-        var status = await Permission.photos.status;
-        if (status.isDenied) {
-          status = await Permission.photos.request();
-        }
-        if (status.isPermanentlyDenied) {
-          if (context.mounted) await _showSettingsDialog(context, 'Photos');
-          return null;
-        } else if (!status.isGranted && !status.isLimited) {
-          return null;
-        }
-      } else if (Platform.isAndroid) {
-        // On Android 13+ (API 33+), image_picker uses Photo Picker which requires NO storage permissions.
-        // On older Android, it might require storage. We'll use image_picker's native handling here 
-        // to avoid falsely blocking Android 13+ users, but we will catch PlatformExceptions below.
-      }
-    }
-
     try {
       final pickedFile = await ImagePicker().pickImage(source: source);
       if (pickedFile != null) {
         return await saveImageLocally(pickedFile);
+      }
+    } on PlatformException catch (e) {
+      if (context.mounted) {
+        if (e.code == 'photo_access_denied' || e.code == 'camera_access_denied' || e.message?.toLowerCase().contains('permission') == true) {
+          await _showSettingsDialog(context, source == ImageSource.camera ? 'Camera' : 'Photos');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.message ?? e.toString()}')));
+        }
       }
     } catch (e) {
       if (context.mounted) {
