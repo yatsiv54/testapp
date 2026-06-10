@@ -127,19 +127,19 @@ class SettingsScreen extends StatelessWidget {
                     value: vm.notificationsEnabled,
                     onChanged: (val) async {
                       if (val) {
-                        final status = await Permission.notification.request();
-                        if (status.isGranted) {
-                          await vm.setNotificationsEnabled(true);
-                          await NotificationService().scheduleDailyReminders();
-                        } else {
-                          await vm.setNotificationsEnabled(false);
-                          if (context.mounted) {
-                            if (status.isPermanentlyDenied) {
+                        final bool granted = await NotificationService().requestPermissions();
+                        if (granted) {
+                          try {
+                            await NotificationService().scheduleDailyReminders();
+                            await vm.setNotificationsEnabled(true);
+                          } catch (e) {
+                            await vm.setNotificationsEnabled(false);
+                            if (context.mounted) {
                               final goToSettings = await showDialog<bool>(
                                 context: context,
                                 builder: (ctx) => AlertDialog(
-                                  title: const Text('Notifications Denied'),
-                                  content: const Text('Please grant Notifications access in Settings to receive reminders.'),
+                                  title: const Text('Exact Alarms Denied'),
+                                  content: const Text('Android requires "Alarms & Reminders" permission to schedule specific notifications. Please enable it in Settings.'),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                   actions: [
                                     TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
@@ -150,8 +150,25 @@ class SettingsScreen extends StatelessWidget {
                               if (goToSettings == true) {
                                 openAppSettings();
                               }
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notifications permission denied.')));
+                            }
+                          }
+                        } else {
+                          await vm.setNotificationsEnabled(false);
+                          if (context.mounted) {
+                            final goToSettings = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: const Text('Notifications Denied'),
+                                content: const Text('Please grant Notifications and Alarms access in Settings to receive reminders.'),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                actions: [
+                                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                  TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Open Settings')),
+                                ],
+                              ),
+                            );
+                            if (goToSettings == true) {
+                              openAppSettings();
                             }
                           }
                         }

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -19,6 +20,28 @@ class NotificationService {
     );
     const InitializationSettings initSettings = InitializationSettings(android: androidSettings, iOS: iosSettings);
     await _notificationsPlugin.initialize(settings: initSettings);
+  }
+
+  Future<bool> requestPermissions() async {
+    if (Platform.isIOS) {
+      final bool? result = await _notificationsPlugin
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+      return result ?? false;
+    } else if (Platform.isAndroid) {
+      final androidImplementation = _notificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      
+      if (androidImplementation != null) {
+        // Request exact alarms permission for Android 12+
+        await androidImplementation.requestExactAlarmsPermission();
+        
+        // Request standard notifications permission for Android 13+
+        final bool? notificationsGranted = await androidImplementation.requestNotificationsPermission();
+        return notificationsGranted ?? true; // If null, it means API < 33, so inherently granted
+      }
+    }
+    return true;
   }
 
   Future<void> scheduleDailyReminders() async {
