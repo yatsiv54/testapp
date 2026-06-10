@@ -134,7 +134,25 @@ class SettingsScreen extends StatelessWidget {
                         } else {
                           await vm.setNotificationsEnabled(false);
                           if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notifications permission denied.')));
+                            if (status.isPermanentlyDenied) {
+                              final goToSettings = await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Notifications Denied'),
+                                  content: const Text('Please grant Notifications access in Settings to receive reminders.'),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  actions: [
+                                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                    TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Open Settings')),
+                                  ],
+                                ),
+                              );
+                              if (goToSettings == true) {
+                                openAppSettings();
+                              }
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notifications permission denied.')));
+                            }
                           }
                         }
                       } else {

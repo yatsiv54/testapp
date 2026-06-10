@@ -69,22 +69,34 @@ class ImageHelper {
 
     if (source == null) return null;
 
-    // Request permissions based on source
+    // Explicit permission requests to throw to settings if rejected
     if (source == ImageSource.camera) {
-      final status = await Permission.camera.request();
+      var status = await Permission.camera.status;
+      if (status.isDenied) {
+        status = await Permission.camera.request();
+      }
       if (status.isPermanentlyDenied) {
-        openAppSettings();
+        if (context.mounted) await _showSettingsDialog(context, 'Camera');
         return null;
       } else if (!status.isGranted) {
-        return null;
+        return null; // Denied but not permanently
       }
     } else {
-      if (Platform.isAndroid) {
-        final status = await Permission.storage.request();
-        if (!status.isGranted) return null;
-      } else if (Platform.isIOS) {
-        final status = await Permission.photos.request();
-        if (!status.isGranted) return null;
+      if (Platform.isIOS) {
+        var status = await Permission.photos.status;
+        if (status.isDenied) {
+          status = await Permission.photos.request();
+        }
+        if (status.isPermanentlyDenied) {
+          if (context.mounted) await _showSettingsDialog(context, 'Photos');
+          return null;
+        } else if (!status.isGranted && !status.isLimited) {
+          return null;
+        }
+      } else if (Platform.isAndroid) {
+        // On Android 13+ (API 33+), image_picker uses Photo Picker which requires NO storage permissions.
+        // On older Android, it might require storage. We'll use image_picker's native handling here 
+        // to avoid falsely blocking Android 13+ users, but we will catch PlatformExceptions below.
       }
     }
 
@@ -95,12 +107,41 @@ class ImageHelper {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to pick image: $e')),
-        );
+        bool isDenied = e.toString().toLowerCase().contains('denied') || e.toString().toLowerCase().contains('permission');
+        if (isDenied) {
+           await _showSettingsDialog(context, source == ImageSource.camera ? 'Camera' : 'Photos');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e')),
+          );
+        }
       }
     }
     return null;
+  }
+
+  static Future<void> _showSettingsDialog(BuildContext context, String feature) async {
+    final goToSettings = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Access Denied'),
+        content: Text('Please grant access to $feature in Settings to use this functionality.'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
+    if (goToSettings == true) {
+      openAppSettings();
+    }
   }
 
   static Widget _buildOption(BuildContext context, {required IconData icon, required String label, required ImageSource source, required Color color}) {
